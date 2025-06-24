@@ -1,0 +1,32 @@
+spring:
+  profiles:
+    active: dev
+  
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:zimche-audit-jwt-secret-key-change-in-production}
+    expiration: 86400000 # 24 hours
+  
+  openai:
+    api-key: ${OPENAI_API_KEY:your-openai-api-key}
+    model: gpt-3.5-turbo
+    max-tokens: 1000
+  
+  aws:
+    access-key: ${AWS_ACCESS_KEY:your-aws-access-key}
+    secret-key: ${AWS_SECRET_KEY:your-aws-secret-key}
+    region: ${AWS_REGION:us-east-1}
+    s3-bucket: ${S3_BUCKET:zimche-audit-documents}
+
+logging:
+  level:
+    com.zimche.audit: DEBUG
+    org.springframework.security: DEBUG

@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: zimche-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: zimche_audit_dev
+      MYSQL_USER: zimche_user
+      MYSQL_PASSWORD: zimche_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: zimche-audit-app
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_USERNAME: zimche_user
+      DB_PASSWORD: zimche_password
+      JWT_SECRET: your-jwt-secret-key
+      OPENAI_API_KEY: your-openai-api-key
+
+volumes:
+  mysql_data:
