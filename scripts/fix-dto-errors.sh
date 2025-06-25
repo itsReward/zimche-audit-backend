@@ -1,3 +1,39 @@
+#!/bin/bash
+
+# Fix DTO compilation errors
+
+RESPONSE_DIR="src/main/kotlin/com/zimche/audit/dto/response"
+
+echo "🔧 Fixing DTO compilation errors..."
+
+# Fix ApiResponse.kt
+cat > $RESPONSE_DIR/ApiResponse.kt << 'EOF'
+package com.zimche.audit.dto.response
+
+import com.fasterxml.jackson.annotation.JsonInclude
+import java.time.LocalDateTime
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+data class ApiResponse<T>(
+    val success: Boolean,
+    val message: String,
+    val data: T? = null,
+    val timestamp: LocalDateTime = LocalDateTime.now()
+) {
+    companion object {
+        fun <T> success(data: T? = null, message: String = "Operation successful"): ApiResponse<T> {
+            return ApiResponse(success = true, message = message, data = data)
+        }
+
+        fun <T> error(message: String): ApiResponse<T> {
+            return ApiResponse(success = false, message = message)
+        }
+    }
+}
+EOF
+
+# Fix AuditResponse.kt - Complete the companion object properly
+cat > $RESPONSE_DIR/AuditResponse.kt << 'EOF'
 package com.zimche.audit.dto.response
 
 import com.zimche.audit.entity.Audit
@@ -84,3 +120,9 @@ data class AuditStepResponse(
         }
     }
 }
+EOF
+
+echo "✅ DTO errors fixed!"
+echo "Fixed files:"
+echo "  - ApiResponse.kt (corrected companion object methods)"
+echo "  - AuditResponse.kt (properly completed the from() method)"

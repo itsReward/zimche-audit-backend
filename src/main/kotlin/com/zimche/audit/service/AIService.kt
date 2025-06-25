@@ -196,7 +196,7 @@ class AIService(
             return AIResult(
                 response = content,
                 confidence = calculateConfidence(content),
-                tokensUsed = tokensUsed,
+                tokensUsed = tokensUsed.toInt(),
                 processingTime = processingTime
             )
         } catch (e: Exception) {

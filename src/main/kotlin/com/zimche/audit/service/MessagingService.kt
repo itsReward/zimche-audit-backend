@@ -8,6 +8,7 @@ import com.zimche.audit.enums.MessageType
 import com.zimche.audit.enums.UserRole
 import com.zimche.audit.exception.ResourceNotFoundException
 import com.zimche.audit.repository.MessageRepository
+import com.zimche.audit.repository.DocumentRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -19,6 +20,7 @@ import java.time.LocalDateTime
 class MessagingService(
     private val messageRepository: MessageRepository,
     private val userService: UserService,
+    private val documentRepository: DocumentRepository,
     private val emailService: EmailService
 ) {
 
@@ -26,20 +28,18 @@ class MessagingService(
         val sender = userService.findByEmail(senderEmail)
         val recipient = userService.findById(request.recipientId)
 
+        val relatedDocument = request.relatedDocumentId?.let {
+            documentRepository.findById(it).orElse(null)
+        }
+
         val message = Message(
             subject = request.subject,
             content = request.content,
             type = request.type ?: MessageType.CHAT,
             sender = sender,
             recipient = recipient,
-            relatedDocument = request.relatedDocumentId?.let {
-                // documentService.findById(it) - would need to inject DocumentService
-                null // Simplified for now
-            },
-            relatedAudit = request.relatedAuditId?.let {
-                // auditService.findById(it) - would need to inject AuditService
-                null // Simplified for now
-            }
+            relatedDocument = relatedDocument,
+            relatedAudit = null // Will be implemented when AuditService is available
         )
 
         val savedMessage = messageRepository.save(message)

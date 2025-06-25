@@ -523,7 +523,15 @@ echo "  - AIAnalysisResponse"
 echo "  - DashboardStatsResponse"
 echo "  - PaginatedResponse"
 echo "  - FileUploadResponse"
-echo "  - ValidationErrorResponse"
+echo "  - ValidationErrorResponse" ApiResponse(success = true, message = message, data = data)
+        }
+
+        fun <T> error(message: String): ApiResponse<T> {
+            return ApiResponse(success = false, message = message)
+        }
+    }
+}
+EOF
 
 cat > $RESPONSE_DIR/AuthResponse.kt << 'EOF'
 package com.zimche.audit.dto.response

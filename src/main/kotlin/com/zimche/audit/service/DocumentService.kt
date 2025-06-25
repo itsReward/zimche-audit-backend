@@ -6,6 +6,8 @@ import com.zimche.audit.enums.DocumentStatus
 import com.zimche.audit.exception.BadRequestException
 import com.zimche.audit.exception.ResourceNotFoundException
 import com.zimche.audit.repository.DocumentRepository
+import com.zimche.audit.repository.UserRepository
+import com.zimche.audit.repository.UniversityRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -17,11 +19,10 @@ import java.time.LocalDateTime
 @Transactional
 class DocumentService(
     private val documentRepository: DocumentRepository,
-    private val userService: UserService,
-    private val universityService: UniversityService,
+    private val userRepository: UserRepository,
+    private val universityRepository: UniversityRepository,
     private val fileStorageService: FileStorageService,
-    private val aiService: AIService,
-    private val messagingService: MessagingService
+    private val emailService: EmailService
 ) {
 
     fun findById(id: Long): Document {
@@ -65,8 +66,10 @@ class DocumentService(
         universityId: Long,
         userEmail: String
     ): DocumentResponse {
-        val user = userService.findByEmail(userEmail)
-        val university = universityService.findById(universityId)
+        val user = userRepository.findByEmail(userEmail)
+            .orElseThrow { ResourceNotFoundException("User not found with email: $userEmail") }
+        val university = universityRepository.findById(universityId)
+            .orElseThrow { ResourceNotFoundException("University not found with id: $universityId") }
 
         // Validate file
         if (file.isEmpty) {
@@ -94,11 +97,8 @@ class DocumentService(
 
         val savedDocument = documentRepository.save(document)
 
-        // Send notification to admins
-        messagingService.notifyDocumentUploaded(savedDocument)
-
-        // Trigger AI analysis
-        aiService.scheduleDocumentAnalysis(savedDocument.id)
+        // Notify document uploaded - will be implemented by MessagingService
+        // messagingService.notifyDocumentUploaded(savedDocument)
 
         return DocumentResponse.from(savedDocument)
     }
@@ -110,7 +110,8 @@ class DocumentService(
         reviewerEmail: String
     ): DocumentResponse {
         val document = findById(documentId)
-        val reviewer = userService.findByEmail(reviewerEmail)
+        val reviewer = userRepository.findByEmail(reviewerEmail)
+            .orElseThrow { ResourceNotFoundException("Reviewer not found with email: $reviewerEmail") }
 
         val updatedDocument = document.copy(
             status = status,
@@ -121,8 +122,8 @@ class DocumentService(
 
         val savedDocument = documentRepository.save(updatedDocument)
 
-        // Send notification to uploader
-        messagingService.notifyDocumentStatusChanged(savedDocument)
+        // Send notification to uploader - will be implemented by MessagingService
+        // messagingService.notifyDocumentStatusChanged(savedDocument)
 
         return DocumentResponse.from(savedDocument)
     }
@@ -134,7 +135,8 @@ class DocumentService(
         userEmail: String
     ): DocumentResponse {
         val document = findById(documentId)
-        val user = userService.findByEmail(userEmail)
+        val user = userRepository.findByEmail(userEmail)
+            .orElseThrow { ResourceNotFoundException("User not found with email: $userEmail") }
 
         // Check if user has permission to update
         if (document.uploadedBy.id != user.id && user.role.name != "ADMIN") {
@@ -151,7 +153,8 @@ class DocumentService(
 
     fun deleteDocument(documentId: Long, userEmail: String) {
         val document = findById(documentId)
-        val user = userService.findByEmail(userEmail)
+        val user = userRepository.findByEmail(userEmail)
+            .orElseThrow { ResourceNotFoundException("User not found with email: $userEmail") }
 
         // Check if user has permission to delete
         if (document.uploadedBy.id != user.id && user.role.name != "ADMIN") {
@@ -174,7 +177,8 @@ class DocumentService(
     @Transactional(readOnly = true)
     fun downloadDocument(documentId: Long, userEmail: String): String {
         val document = findById(documentId)
-        val user = userService.findByEmail(userEmail)
+        val user = userRepository.findByEmail(userEmail)
+            .orElseThrow { ResourceNotFoundException("User not found with email: $userEmail") }
 
         // Check access permissions based on user role and university
         when (user.role) {

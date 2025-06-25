@@ -1,18 +1,24 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/zimche_audit_dev?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:postgresql://localhost:5432/zimche_audit_dev
     username: ${DB_USERNAME:zimche_user}
     password: ${DB_PASSWORD:zimche_password}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  
+    driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+        # PostgreSQL specific optimizations
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        temp:
+          use_jdbc_metadata_defaults: false
 
   mail:
     host: smtp.gmail.com
@@ -30,3 +36,4 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.postgresql: DEBUG

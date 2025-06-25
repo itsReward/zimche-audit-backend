@@ -39,8 +39,15 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.12.3")
     
     // Database
-    runtimeOnly("mysql:mysql-connector-java:8.0.33")
+    runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("com.h2database:h2") // For testing
+
+    // Swagger/OpenAPI
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+
+    // Additional utilities
+    implementation("org.apache.commons:commons-lang3:3.13.0")
+    implementation("commons-io:commons-io:2.11.0")
     
     // File Storage (AWS S3)
     implementation("software.amazon.awssdk:s3:2.21.29")
@@ -69,3 +76,10 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+
+
+    // Ensure JJWT version compatibility
+    implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
