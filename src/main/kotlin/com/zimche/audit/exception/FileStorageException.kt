@@ -8,7 +8,11 @@ class FileStorageException(
     val operation: String? = null,
     cause: Throwable? = null
 ) : RuntimeException(message, cause) {
-    
-    constructor(operation: String, filename: String, cause: Throwable) : 
-        this(message = "Failed to $operation file '$filename': ${cause.message}", operation, cause)
+
+    companion object {
+        fun forOperation(operation: String, auditId: Long, currentStatus: String): AuditException {
+            return AuditException("Cannot $operation audit $auditId in status $currentStatus", auditId, currentStatus)
+        }
+    }
+
 }

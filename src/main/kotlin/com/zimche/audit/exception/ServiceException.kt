@@ -8,7 +8,16 @@ class ServiceException(
     val service: String,
     cause: Throwable? = null
 ) : RuntimeException(message, cause) {
-    
-    constructor(service: String, operation: String, cause: Throwable) : 
-        this(message = "$service service failed during $operation: ${cause.message}", service, cause)
+
+    companion object {
+        fun forOperation(service: String, operation: String, cause: Throwable): ServiceException {
+            return ServiceException(
+                message = "$service service failed during $operation: ${cause.message}",
+                service = service,
+                cause = cause
+            )
+        }
+    }
+
+
 }

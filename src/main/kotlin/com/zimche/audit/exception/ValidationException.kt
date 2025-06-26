@@ -10,5 +10,16 @@ class ValidationException(
     val code: String? = null
 ) : RuntimeException(message) {
 
-    constructor(field: String, message: String, code: String) : this(message = message, /*field=field, code = code*/)
+    // Alternative approach using companion object
+    companion object {
+        fun forField(field: String, message: String, code: String): ValidationException {
+            return ValidationException(
+                message = message,
+                field = field,
+                code = code
+            )
+        }
+    }
+
+
 }
