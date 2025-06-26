@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/zimche_audit_dev
-    username: ${DB_USERNAME:zimche_user}
-    password: ${DB_PASSWORD:zimche_password}
+    url: jdbc:postgresql://localhost:5432/zimche_audit
+    username: ${DB_USERNAME:dev}
+    password: ${DB_PASSWORD:development}
     driver-class-name: org.postgresql.Driver
 
   jpa:

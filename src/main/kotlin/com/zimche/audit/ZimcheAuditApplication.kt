@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.transaction.annotation.EnableTransactionManagement
 
 @SpringBootApplication
-@EnableJpaAuditing
 @EnableAsync
 @EnableTransactionManagement
 class ZimcheAuditApplication
