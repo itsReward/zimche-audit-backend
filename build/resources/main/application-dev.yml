@@ -13,16 +13,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-        # PostgreSQL specific optimizations
-        jdbc:
-          lob:
-            non_contextual_creation: true
-        temp:
-          use_jdbc_metadata_defaults: false
 
   mail:
-    host: smtp.gmail.com
-    port: 587
+    host: ${EMAIL_HOST:smtp.gmail.com}
+    port: ${EMAIL_PORT:587}
     username: ${EMAIL_USERNAME:your-email@gmail.com}
     password: ${EMAIL_PASSWORD:your-app-password}
     properties:
@@ -34,6 +28,5 @@ spring:
 
 logging:
   level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.postgresql: DEBUG
+    com.zimche.audit: DEBUG
+    org.springframework.security: DEBUG

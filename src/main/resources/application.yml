@@ -7,12 +7,34 @@ spring:
       max-file-size: 50MB
       max-request-size: 50MB
 
+  # Thymeleaf Configuration
+  thymeleaf:
+    cache: false
+    enabled: true
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+
+  # Security Configuration
+  security:
+    user:
+      name: dev
+      password: dev123
+      roles: ADMIN
+
 server:
   port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
 
 app:
   jwt:
-    secret: ${JWT_SECRET:zimche-audit-jwt-secret-key-change-in-production}
+    secret: ${JWT_SECRET:zimche-audit-jwt-secret-key-change-in-production,rewHOFJDSKBFKDSHFEUWIFHY329RY29579594IFSHDFHHhgfhehshgiwu777GHVSG}
     expiration: 86400000 # 24 hours
 
   openai:
@@ -28,5 +50,6 @@ app:
 
 logging:
   level:
-    com.zimche.audit: DEBUG
-    org.springframework.security: DEBUG
+    com.zimche.audit: INFO
+    org.springframework.security: INFO
+    org.springframework.web: INFO
