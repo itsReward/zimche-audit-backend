@@ -6,8 +6,12 @@ import com.zimche.audit.enums.UserRole
 import com.zimche.audit.exception.BadRequestException
 import com.zimche.audit.exception.ResourceNotFoundException
 import com.zimche.audit.repository.UserRepository
+import com.zimche.audit.util.SpringProfileUtils
+import jakarta.annotation.PostConstruct
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,7 +19,8 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class UserService(
     private val userRepository: UserRepository,
-    private val universityService: UniversityService
+    private val universityService: UniversityService,
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     fun findById(id: Long): User {
@@ -124,4 +129,48 @@ class UserService(
             "usersByRole" to usersByRole
         )
     }
+
+    @PostConstruct
+    @Transactional
+    fun initializeDefaultAdminUser() {
+        val userCount = userRepository.count()
+
+        // Only create default admin if there are no users in the database
+        if (userCount.toInt() == 0) {
+            // Get credentials from application properties, or use defaults
+            val adminEmail = System.getenv("DEFAULT_ADMIN_EMAIL") ?: "admin@zimche.ac.zw"
+            val adminPassword = System.getenv("DEFAULT_ADMIN_PASSWORD") ?: "Admin@2025!"
+
+            // Check if admin already exists (additional safety check)
+            val existingAdmin = userRepository.findByEmail(adminEmail).orElse(null)
+
+            if (existingAdmin == null) {
+                val defaultAdmin = User(
+                    email = adminEmail,
+                    password = passwordEncoder.encode(adminPassword), // Encode the password
+                    firstName = "System",
+                    lastName = "Administrator",
+                    role = UserRole.ADMIN,
+                    phoneNumber = "+263000000000",
+                    isActive = true,
+                    isEmailVerified = true
+                )
+
+                val savedAdmin = userRepository.save(defaultAdmin)
+
+                // Log the creation of default admin (important for auditing)
+                logger.info("Default admin user created with email: ${savedAdmin.email}")
+
+                // Print credentials to console during development (remove in production)
+                if (SpringProfileUtils.isDevProfile()) {
+                    logger.info("Default admin credentials: Email: $adminEmail, Password: $adminPassword")
+                }
+            }
+        }
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(UserService::class.java)
+    }
+
 }

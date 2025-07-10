@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Dashboard - ZIMCHE Audit</title>
+</head>
+<body>
+    <section class="dashboard-container">
+        <!-- Welcome Message -->
+        <div class="welcome-card mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar-circle me-3">
+                        <span th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.lastName,0,1)}">US</span>
+                    </div>
+                    <div>
+                        <h4 class="mb-1">Welcome back, <span th:text="${user.firstName}">User</span>!</h4>
+                        <p class="text-muted mb-0" th:text="${#temporals.format(#temporals.createNow(), 'EEEE, MMMM d, yyyy')}">Wednesday, July 2, 2025</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Universities</h6>
+                                <h2 class="mb-0" th:text="${totalUniversities}">0</h2>
+                            </div>
+                            <div class="icon-bg bg-light-orange">
+                                <i class="bi bi-building"></i>
+                            </div>
+                        </div>
+                        <div class="progress mt-3" style="height: 5px;">
+                            <div class="progress-bar bg-orange" role="progressbar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Documents</h6>
+                                <h2 class="mb-0" th:text="${totalDocuments}">0</h2>
+                            </div>
+                            <div class="icon-bg bg-light-blue">
+                                <i class="bi bi-file-earmark-text"></i>
+                            </div>
+                        </div>
+                        <div class="progress mt-3" style="height: 5px;">
+                            <div class="progress-bar bg-blue" role="progressbar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-muted mb-1">Pending Audits</h6>
+                                <h2 class="mb-0" th:text="${pendingAudits}">0</h2>
+                            </div>
+                            <div class="icon-bg bg-light-green">
+                                <i class="bi bi-hourglass-split"></i>
+                            </div>
+                        </div>
+                        <div class="progress mt-3" style="height: 5px;">
+                            <div class="progress-bar bg-green" role="progressbar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="row g-4">
+            <!-- Recent Activity -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Recent Activity</h5>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="activityFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                All Activities
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="activityFilterDropdown">
+                                <li><a class="dropdown-item active" href="#">All Activities</a></li>
+                                <li><a class="dropdown-item" href="#">Document Uploads</a></li>
+                                <li><a class="dropdown-item" href="#">Audit Reviews</a></li>
+                                <li><a class="dropdown-item" href="#">System Updates</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-timeline">
+                            <!-- Placeholder for activity items - will be populated dynamically later -->
+                            <div class="activity-item">
+                                <div class="activity-icon bg-light-blue">
+                                    <i class="bi bi-file-earmark-arrow-up"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="mb-0"><strong>Document Uploaded</strong> - Annual Report 2025</p>
+                                    <p class="text-muted small mb-0">University of Zimbabwe • 2 hours ago</p>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon bg-light-green">
+                                    <i class="bi bi-check-circle"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="mb-0"><strong>Audit Completed</strong> - Quality Assurance Review</p>
+                                    <p class="text-muted small mb-0">Harare Institute of Technology • Yesterday</p>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-item">
+                                <div class="activity-icon bg-light-orange">
+                                    <i class="bi bi-person-plus"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="mb-0"><strong>New User Added</strong> - John Smith (Peer Reviewer)</p>
+                                    <p class="text-muted small mb-0">System Admin • 3 days ago</p>
+                                </div>
+                            </div>
+                            
+                            <div class="empty-state d-none">
+                                <div class="text-center py-4">
+                                    <i class="bi bi-calendar-x text-muted" style="font-size: 2.5rem;"></i>
+                                    <p class="mt-2 mb-0">No recent activities to display</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white text-center">
+                        <a href="#" class="btn btn-sm btn-outline-secondary">View All Activities</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions & Notices -->
+            <div class="col-lg-4">
+                <!-- Quick Actions -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="/documents/upload" class="btn btn-orange d-flex align-items-center">
+                                <i class="bi bi-upload me-2"></i>
+                                <span>Upload Document</span>
+                            </a>
+                            
+                            <a href="/universities" class="btn btn-outline-secondary d-flex align-items-center">
+                                <i class="bi bi-building me-2"></i>
+                                <span>View Universities</span>
+                            </a>
+                            
+                            <a href="/documents" class="btn btn-outline-secondary d-flex align-items-center">
+                                <i class="bi bi-file-earmark-text me-2"></i>
+                                <span>Manage Documents</span>
+                            </a>
+                            
+                            <a sec:authorize="hasRole('ADMIN')" href="/admin/users" class="btn btn-outline-secondary d-flex align-items-center">
+                                <i class="bi bi-people me-2"></i>
+                                <span>Manage Users</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notices -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Notices</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="notice-item mb-3">
+                            <h6 class="notice-title">Quarterly Review Deadline</h6>
+                            <p class="mb-1">All universities must submit their quarterly review documents by July 15, 2025.</p>
+                            <span class="badge bg-warning text-dark">Due in 13 days</span>
+                        </div>
+                        
+                        <div class="notice-item mb-3">
+                            <h6 class="notice-title">System Maintenance</h6>
+                            <p class="mb-1">Scheduled maintenance on July 5, 2025 from 2:00 AM to 4:00 AM EAT.</p>
+                            <span class="badge bg-info">Upcoming</span>
+                        </div>
+                        
+                        <div class="notice-item">
+                            <h6 class="notice-title">New Audit Guidelines</h6>
+                            <p class="mb-1">Updated quality assurance guidelines have been published. Please review.</p>
+                            <span class="badge bg-success">New</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
