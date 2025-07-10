@@ -1,11 +1,3 @@
-<!-- ====================================================================================
-   LANDING PAGE TEMPLATE
-   ====================================================================================
-   File: src/main/resources/templates/pages/index.html
-
-   This is the landing page that users see when they visit http://localhost:8080/
-   Your WebController returns "pages/index" so this file needs to exist.
-   ==================================================================================== -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
@@ -37,82 +29,92 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <div class="d-flex align-items-center">
-                            <i class="fas fa-file-alt me-3" style="font-size: 1.5rem;"></i>
-                            <div>
-                                <h5 class="mb-0">800+</h5>
-                                <small>Documents Processed</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center">
                             <i class="fas fa-clipboard-check me-3" style="font-size: 1.5rem;"></i>
                             <div>
-                                <h5 class="mb-0">50+</h5>
+                                <h5 class="mb-0">847</h5>
                                 <small>Audits Completed</small>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-file-alt me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h5 class="mb-0">2,341</h5>
+                                <small>Documents Reviewed</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-users me-3" style="font-size: 1.5rem;"></i>
                             <div>
-                                <h5 class="mb-0">150+</h5>
+                                <h5 class="mb-0">156</h5>
                                 <small>Active Users</small>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="d-flex gap-3">
-                    <a th:href="@{/login}" class="btn btn-light btn-lg px-4">
-                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                <!-- CTA Buttons -->
+                <div class="d-flex flex-wrap gap-3">
+                    <a th:href="@{/login}" class="btn btn-light btn-lg px-4 py-2">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        Login to System
                     </a>
-                    <a th:href="@{/register}" class="btn btn-outline-light btn-lg px-4">
-                        <i class="fas fa-user-plus me-2"></i>Register
+                    <a href="#features" class="btn btn-outline-light btn-lg px-4 py-2">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Learn More
                     </a>
                 </div>
             </div>
 
-            <!-- Right Column - Features -->
-            <div class="col-lg-6">
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100 shadow-lg border-0" style="backdrop-filter: blur(10px); background: rgba(255,255,255,0.1);">
-                            <div class="card-body text-white text-center">
-                                <i class="fas fa-shield-alt text-white mb-3" style="font-size: 2.5rem;"></i>
-                                <h5 class="card-title">Secure Platform</h5>
-                                <p class="card-text">Enterprise-grade security with role-based access control and encrypted data storage.</p>
+            <!-- Right Column - Features/Info -->
+            <div class="col-lg-6 mt-5 mt-lg-0">
+                <div class="card bg-white bg-opacity-10 backdrop-blur border-0">
+                    <div class="card-body p-4">
+                        <h3 class="text-white mb-4">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            Secure & Efficient Auditing
+                        </h3>
+
+                        <div class="mb-3">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-check-circle text-light me-3 mt-1"></i>
+                                <div class="text-white">
+                                    <h6 class="mb-1">Comprehensive Documentation</h6>
+                                    <small class="text-white-50">Manage all audit documents in one secure platform</small>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100 shadow-lg border-0" style="backdrop-filter: blur(10px); background: rgba(255,255,255,0.1);">
-                            <div class="card-body text-white text-center">
-                                <i class="fas fa-chart-line text-white mb-3" style="font-size: 2.5rem;"></i>
-                                <h5 class="card-title">Real-time Analytics</h5>
-                                <p class="card-text">Comprehensive reporting and analytics to track audit progress and compliance metrics.</p>
+                        <div class="mb-3">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-check-circle text-light me-3 mt-1"></i>
+                                <div class="text-white">
+                                    <h6 class="mb-1">Real-time Collaboration</h6>
+                                    <small class="text-white-50">Enable seamless communication between universities and auditors</small>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100 shadow-lg border-0" style="backdrop-filter: blur(10px); background: rgba(255,255,255,0.1);">
-                            <div class="card-body text-white text-center">
-                                <i class="fas fa-robot text-white mb-3" style="font-size: 2.5rem;"></i>
-                                <h5 class="card-title">AI-Powered</h5>
-                                <p class="card-text">Automated document analysis and intelligent insights to streamline review processes.</p>
+                        <div class="mb-3">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-check-circle text-light me-3 mt-1"></i>
+                                <div class="text-white">
+                                    <h6 class="mb-1">Automated Reporting</h6>
+                                    <small class="text-white-50">Generate comprehensive audit reports automatically</small>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-6 mb-4">
-                        <div class="card h-100 shadow-lg border-0" style="backdrop-filter: blur(10px); background: rgba(255,255,255,0.1);">
-                            <div class="card-body text-white text-center">
-                                <i class="fas fa-mobile-alt text-white mb-3" style="font-size: 2.5rem;"></i>
-                                <h5 class="card-title">Mobile Ready</h5>
-                                <p class="card-text">Access the platform from anywhere with responsive design and mobile optimization.</p>
+                        <div class="mb-0">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-check-circle text-light me-3 mt-1"></i>
+                                <div class="text-white">
+                                    <h6 class="mb-1">Quality Assurance</h6>
+                                    <small class="text-white-50">Maintain high standards across all educational institutions</small>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -120,6 +122,66 @@
             </div>
         </div>
     </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-5 fw-bold text-dark">Platform Features</h2>
+                <p class="lead text-muted">Everything you need for comprehensive university audit management</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center h-100">
+                    <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-university text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h4>University Management</h4>
+                    <p class="text-muted">Comprehensive profiles and management tools for all registered universities in Zimbabwe.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="text-center h-100">
+                    <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-file-shield text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h4>Secure Document Storage</h4>
+                    <p class="text-muted">Safe and organized storage for all audit-related documents with version control.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="text-center h-100">
+                    <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-chart-line text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <h4>Analytics & Reports</h4>
+                    <p class="text-muted">Detailed analytics and automated report generation for audit insights.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>ZIMCHE Audit Management</h5>
+                <p class="mb-0">Enhancing quality assurance in Zimbabwean higher education.</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p class="mb-0">&copy; 2025 Zimbabwe Council for Higher Education. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</footer>
 </section>
 </body>
 </html>

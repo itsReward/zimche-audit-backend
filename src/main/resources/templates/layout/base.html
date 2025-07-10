@@ -1,11 +1,10 @@
-<!-- 1. BASE LAYOUT TEMPLATE -->
-<!-- src/main/resources/templates/layout/base.html -->
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout (title, content)">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle ?: 'ZIMCHE Audit Management'}">ZIMCHE Audit Management</title>
+    <title th:replace="${title}">ZIMCHE Audit Management</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" th:href="@{/static/images/favicon.ico}">
@@ -53,6 +52,10 @@
 
         .sidebar.collapsed {
             width: 70px;
+        }
+
+        .sidebar.show {
+            transform: translateX(0);
         }
 
         .sidebar-brand {
@@ -151,256 +154,134 @@
             border-color: var(--dark-orange);
         }
 
-        .table-responsive {
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .table th {
-            background-color: var(--light-orange);
-            color: var(--dark-orange);
-            font-weight: 600;
-            border: none;
-        }
-
-        .badge-status {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .badge-active { background-color: var(--success-green); color: white; }
-        .badge-inactive { background-color: var(--danger-red); color: white; }
-        .badge-pending { background-color: var(--warning-yellow); color: var(--dark-gray); }
-        .badge-completed { background-color: var(--info-blue); color: white; }
-
         .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary-orange);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-        }
-
-        .dropdown-toggle::after {
-            display: none;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: var(--danger-red);
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-        }
-
-        .recent-activity {
-            background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .activity-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .activity-item:last-child {
-            border-bottom: none;
-        }
-
-        .activity-icon {
-            width: 40px;
-            height: 40px;
+            background: var(--primary-orange);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 1rem;
             color: white;
+            font-weight: bold;
         }
 
-        .login-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
-        }
-
-        .login-card {
-            background: white;
-            border-radius: 15px;
-            padding: 3rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .form-floating > .form-control {
-            border-radius: 10px;
-        }
-
-        .form-floating > .form-control:focus {
-            border-color: var(--primary-orange);
-            box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
-        }
-
-        @media (max-width: 768px) {
+        /* Mobile responsive */
+        @media (max-width: 991.98px) {
             .sidebar {
                 transform: translateX(-100%);
-            }
-
-            .sidebar.show {
-                transform: translateX(0);
             }
 
             .main-content {
                 margin-left: 0;
             }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
         }
     </style>
 </head>
 <body>
-<!-- Sidebar (only show when authenticated) -->
-<nav class="sidebar" sec:authorize="isAuthenticated()" id="sidebar">
-    <div class="sidebar-brand">
-        <i class="fas fa-graduation-cap me-2"></i>
-        <span class="brand-text">ZIMCHE</span>
-    </div>
+<!-- Authenticated Layout -->
+<div class="d-flex" sec:authorize="isAuthenticated()">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+        <a href="#" class="sidebar-brand">
+            <i class="fas fa-university me-2"></i>
+            ZIMCHE Audit
+        </a>
 
-    <ul class="sidebar-nav">
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/dashboard}" th:classappend="${activeNav == 'dashboard'} ? 'active' : ''">
-                <i class="fas fa-tachometer-alt"></i>
-                <span class="nav-text">Dashboard</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/universities}" th:classappend="${activeNav == 'universities'} ? 'active' : ''">
-                <i class="fas fa-university"></i>
-                <span class="nav-text">Universities</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/documents}" th:classappend="${activeNav == 'documents'} ? 'active' : ''">
-                <i class="fas fa-file-alt"></i>
-                <span class="nav-text">Documents</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/audits}" th:classappend="${activeNav == 'audits'} ? 'active' : ''">
-                <i class="fas fa-clipboard-check"></i>
-                <span class="nav-text">Audits</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/messages}" th:classappend="${activeNav == 'messages'} ? 'active' : ''">
-                <i class="fas fa-envelope"></i>
-                <span class="nav-text">Messages</span>
-            </a>
-        </li>
-        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-            <a class="nav-link" th:href="@{/admin}" th:classappend="${activeNav == 'admin'} ? 'active' : ''">
-                <i class="fas fa-cogs"></i>
-                <span class="nav-text">Admin</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/profile}" th:classappend="${activeNav == 'profile'} ? 'active' : ''">
-                <i class="fas fa-user"></i>
-                <span class="nav-text">Profile</span>
-            </a>
-        </li>
-    </ul>
-</nav>
+        <nav class="sidebar-nav">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/dashboard}">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/universities}">
+                        <i class="fas fa-university"></i>
+                        Universities
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/documents}">
+                        <i class="fas fa-file-alt"></i>
+                        Documents
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/audits}">
+                        <i class="fas fa-clipboard-check"></i>
+                        Audits
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/reports}">
+                        <i class="fas fa-chart-bar"></i>
+                        Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/profile}">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin}">
+                        <i class="fas fa-cogs"></i>
+                        Admin
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
 
-<!-- Main Content -->
-<div class="main-content" sec:authorize="isAuthenticated()" id="main-content">
-    <!-- Header -->
-    <header class="header">
-        <div class="d-flex justify-content-between align-items-center">
+    <!-- Main Content -->
+    <div id="main-content" class="main-content w-100">
+        <!-- Header -->
+        <header class="header d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-                <button class="btn btn-link d-md-none" id="sidebar-toggle">
+                <button id="sidebar-toggle" class="btn btn-outline-secondary d-lg-none me-3">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h4 class="mb-0 text-muted" th:text="${pageTitle}">Dashboard</h4>
+                <h5 class="mb-0">ZIMCHE Audit Management</h5>
             </div>
 
-            <div class="d-flex align-items-center">
-                <!-- Search -->
-                <div class="me-3 d-none d-md-block">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search...">
-                        <button class="btn btn-outline-secondary" type="button">
-                            <i class="fas fa-search"></i>
-                        </button>
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center"
+                        type="button" data-bs-toggle="dropdown">
+                    <div class="avatar me-2" style="width: 32px; height: 32px; font-size: 0.875rem;">
+                        <span sec:authentication="name" th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">U</span>
                     </div>
-                </div>
-
-                <!-- Notifications -->
-                <div class="me-3 position-relative">
-                    <button class="btn btn-link text-muted" data-bs-toggle="dropdown">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">3</span>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <h6 class="dropdown-header">Notifications</h6>
-                        <a class="dropdown-item" href="#"><i class="fas fa-file-alt text-info me-2"></i>New document uploaded</a>
-                        <a class="dropdown-item" href="#"><i class="fas fa-user text-success me-2"></i>User registration pending</a>
-                        <a class="dropdown-item" href="#"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Audit deadline approaching</a>
-                    </div>
-                </div>
-
-                <!-- User Menu -->
-                <div class="dropdown">
-                    <button class="btn btn-link d-flex align-items-center text-decoration-none" data-bs-toggle="dropdown">
-                        <div class="avatar me-2">
-                            <span sec:authentication="name" th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">U</span>
-                        </div>
-                        <span class="d-none d-md-block text-muted" sec:authentication="name">User</span>
-                        <i class="fas fa-chevron-down ms-2 text-muted"></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end">
-                        <a class="dropdown-item" th:href="@{/profile}"><i class="fas fa-user me-2"></i>Profile</a>
-                        <a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a>
-                        <div class="dropdown-divider"></div>
+                    <span sec:authentication="name" class="d-none d-md-inline">User</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" th:href="@{/profile}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
                         <form th:action="@{/logout}" method="post">
                             <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
                         </form>
-                    </div>
-                </div>
+                    </li>
+                </ul>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Page Content -->
-    <main class="p-4">
-        <div layout:fragment="content">
-            <!-- Content will be replaced by specific pages -->
-        </div>
-    </main>
+        <!-- Page Content -->
+        <main class="p-4">
+            <div th:replace="${content}">
+                <!-- Content will be replaced by specific pages -->
+            </div>
+        </main>
+    </div>
 </div>
 
 <!-- Full width content for non-authenticated pages -->
 <div class="w-100" sec:authorize="!isAuthenticated()">
-    <div layout:fragment="content">
+    <div th:replace="${content}">
         <!-- Content for login/register pages -->
     </div>
 </div>
@@ -411,8 +292,6 @@
     // Sidebar toggle functionality
     document.getElementById('sidebar-toggle')?.addEventListener('click', function() {
         const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('main-content');
-
         sidebar.classList.toggle('show');
     });
 
