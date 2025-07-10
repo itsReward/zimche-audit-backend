@@ -1,0 +1,77 @@
+<aside th:fragment="sidebar" class="w-64 bg-gradient-to-br from-orange-500 to-orange-600 text-white shadow-lg sidebar">
+    <div class="p-6">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                <i class="fas fa-university text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold">ZIMCHE</h1>
+                <p class="text-orange-100 text-sm">Audit Management</p>
+            </div>
+        </div>
+    </div>
+
+    <nav class="mt-6">
+        <div class="px-4">
+            <a th:href="@{/dashboard}"
+               th:classappend="${activeNav == 'dashboard' ? 'bg-orange-700 bg-opacity-50' : ''}"
+               class="flex items-center px-4 py-3 rounded-lg text-orange-100 hover:bg-orange-700 hover:bg-opacity-50 transition-colors mb-1">
+                <i class="fas fa-tachometer-alt w-5 h-5 mr-3"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a th:href="@{/universities}"
+               th:classappend="${activeNav == 'universities' ? 'bg-orange-700 bg-opacity-50' : ''}"
+               class="flex items-center px-4 py-3 rounded-lg text-orange-100 hover:bg-orange-700 hover:bg-opacity-50 transition-colors mb-1">
+                <i class="fas fa-university w-5 h-5 mr-3"></i>
+                <span>Universities</span>
+            </a>
+
+            <a th:href="@{/documents}"
+               th:classappend="${activeNav == 'documents' ? 'bg-orange-700 bg-opacity-50' : ''}"
+               class="flex items-center px-4 py-3 rounded-lg text-orange-100 hover:bg-orange-700 hover:bg-opacity-50 transition-colors mb-1">
+                <i class="fas fa-file-alt w-5 h-5 mr-3"></i>
+                <span>Documents</span>
+            </a>
+
+            <a th:href="@{/audits}"
+               th:classappend="${activeNav == 'audits' ? 'bg-orange-700 bg-opacity-50' : ''}"
+               class="flex items-center px-4 py-3 rounded-lg text-orange-100 hover:bg-orange-700 hover:bg-opacity-50 transition-colors mb-1">
+                <i class="fas fa-clipboard-check w-5 h-5 mr-3"></i>
+                <span>Audits</span>
+            </a>
+
+            <a th:href="@{/messages}"
+               th:classappend="${activeNav == 'messages' ? 'bg-orange-700 bg-opacity-50' : ''}"
+               class="flex items-center px-4 py-3 rounded-lg text-orange-100 hover:bg-orange-700 hover:bg-opacity-50 transition-colors mb-1">
+                <i class="fas fa-comments w-5 h-5 mr-3"></i>
+                <span>Messages</span>
+            </a>
+        </div>
+
+        <div class="border-t border-orange-400 border-opacity-30 mt-6 pt-6 px-4">
+            <a th:href="@{/profile}"
+               th:classappend="${activeNav == 'profile' ? 'bg-orange-700 bg-opacity-50' : ''}"
+               class="flex items-center px-4 py-3 rounded-lg text-orange-100 hover:bg-orange-700 hover:bg-opacity-50 transition-colors mb-1">
+                <i class="fas fa-user w-5 h-5 mr-3"></i>
+                <span>Profile</span>
+            </a>
+
+            <div sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin}"
+                   th:classappend="${activeNav == 'admin' ? 'bg-orange-700 bg-opacity-50' : ''}"
+                   class="flex items-center px-4 py-3 rounded-lg text-orange-100 hover:bg-orange-700 hover:bg-opacity-50 transition-colors mb-1">
+                    <i class="fas fa-cog w-5 h-5 mr-3"></i>
+                    <span>Admin Panel</span>
+                </a>
+            </div>
+
+            <form th:action="@{/logout}" method="post" class="mt-2">
+                <button type="submit" class="w-full flex items-center px-4 py-3 rounded-lg text-orange-100 hover:bg-red-600 hover:bg-opacity-75 transition-colors">
+                    <i class="fas fa-sign-out-alt w-5 h-5 mr-3"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </nav>
+</aside>
