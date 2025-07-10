@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Documents - ZIMCHE Audit</title>
+</head>
+<body>
+<section>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Documents</h2>
+            <p class="text-muted">Manage audit documents and submissions</p>
+        </div>
+        <div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                <i class="fas fa-upload me-2"></i>Upload Document
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Row -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="icon blue">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h4 class="mb-2">847</h4>
+                <p class="text-muted mb-0">Total Documents</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="icon orange">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h4 class="mb-2">23</h4>
+                <p class="text-muted mb-0">Pending Review</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="icon green">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h4 class="mb-2">756</h4>
+                <p class="text-muted mb-0">Approved</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="icon red">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h4 class="mb-2">68</h4>
+                <p class="text-muted mb-0">Needs Revision</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search documents...">
+                <button class="btn btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select">
+                <option value="">All Universities</option>
+                <option value="1">University of Zimbabwe</option>
+                <option value="2">Midlands State University</option>
+                <option value="3">NUST</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select">
+                <option value="">All Categories</option>
+                <option value="academic">Academic Standards</option>
+                <option value="financial">Financial Reports</option>
+                <option value="infrastructure">Infrastructure</option>
+                <option value="governance">Governance</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Documents Table -->
+    <div class="stats-card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                <tr>
+                    <th>Document</th>
+                    <th>University</th>
+                    <th>Category</th>
+                    <th>Upload Date</th>
+                    <th>Status</th>
+                    <th>Size</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <i class="fas fa-file-pdf text-danger" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Academic Standards Review 2025</h6>
+                                <small class="text-muted">Comprehensive academic assessment report</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem; background-color: var(--primary-orange);">UZ</div>
+                            University of Zimbabwe
+                        </div>
+                    </td>
+                    <td><span class="badge" style="background-color: var(--info-blue); color: white;">Academic</span></td>
+                    <td>July 8, 2025</td>
+                    <td><span class="badge badge-pending">Pending Review</span></td>
+                    <td>2.3 MB</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>View</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i>Download</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-success" href="#"><i class="fas fa-check me-2"></i>Approve</a>
+                                <a class="dropdown-item text-danger" href="#"><i class="fas fa-times me-2"></i>Reject</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <i class="fas fa-file-excel text-success" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Financial Audit Report Q2 2025</h6>
+                                <small class="text-muted">Quarterly financial assessment</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem; background-color: var(--info-blue);">MSU</div>
+                            Midlands State University
+                        </div>
+                    </td>
+                    <td><span class="badge" style="background-color: var(--success-green); color: white;">Financial</span></td>
+                    <td>July 5, 2025</td>
+                    <td><span class="badge badge-completed">Approved</span></td>
+                    <td>1.8 MB</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>View</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i>Download</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-share me-2"></i>Share</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <i class="fas fa-file-word text-primary" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Infrastructure Development Plan</h6>
+                                <small class="text-muted">5-year infrastructure roadmap</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem; background-color: var(--warning-yellow); color: var(--dark-gray);">NUST</div>
+                            NUST
+                        </div>
+                    </td>
+                    <td><span class="badge" style="background-color: var(--warning-yellow); color: var(--dark-gray);">Infrastructure</span></td>
+                    <td>July 3, 2025</td>
+                    <td><span class="badge badge-inactive">Needs Revision</span></td>
+                    <td>4.1 MB</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>View</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i>Download</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-comment me-2"></i>Add Comments</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-warning" href="#"><i class="fas fa-edit me-2"></i>Request Revision</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <i class="fas fa-file-pdf text-danger" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Governance Framework 2025</h6>
+                                <small class="text-muted">Updated institutional governance policies</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem; background-color: var(--danger-red);">AU</div>
+                            Africa University
+                        </div>
+                    </td>
+                    <td><span class="badge" style="background-color: var(--danger-red); color: white;">Governance</span></td>
+                    <td>June 30, 2025</td>
+                    <td><span class="badge badge-completed">Approved</span></td>
+                    <td>3.7 MB</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>View</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i>Download</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-share me-2"></i>Share</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <i class="fas fa-file-powerpoint text-warning" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Student Services Evaluation</h6>
+                                <small class="text-muted">Assessment of student support services</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="avatar me-2" style="width: 30px; height: 30px; font-size: 0.8rem; background-color: var(--success-green);">CUT</div>
+                            Chinhoyi University of Technology
+                        </div>
+                    </td>
+                    <td><span class="badge" style="background-color: var(--info-blue); color: white;">Academic</span></td>
+                    <td>June 28, 2025</td>
+                    <td><span class="badge badge-pending">Pending Review</span></td>
+                    <td>5.2 MB</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#"><i class="fas fa-eye me-2"></i>View</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i>Download</a>
+                                <a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-success" href="#"><i class="fas fa-check me-2"></i>Approve</a>
+                                <a class="dropdown-item text-danger" href="#"><i class="fas fa-times me-2"></i>Reject</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Documents pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</section>
+
+<!-- Upload Document Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload New Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="docTitle" class="form-label">Document Title</label>
+                            <input type="text" class="form-control" id="docTitle" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="docCategory" class="form-label">Category</label>
+                            <select class="form-select" id="docCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="academic">Academic Standards</option>
+                                <option value="financial">Financial Reports</option>
+                                <option value="infrastructure">Infrastructure</option>
+                                <option value="governance">Governance</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3" sec:authorize="hasRole('ADMIN')">
+                        <label for="docUniversity" class="form-label">University</label>
+                        <select class="form-select" id="docUniversity" required>
+                            <option value="">Select University</option>
+                            <option value="1">University of Zimbabwe</option>
+                            <option value="2">Midlands State University</option>
+                            <option value="3">NUST</option>
+                            <option value="4">Africa University</option>
+                            <option value="5">Chinhoyi University of Technology</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="docDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="docDescription" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="docFile" class="form-label">Choose File</label>
+                        <div class="border rounded p-4 text-center bg-light" style="border-style: dashed !important;">
+                            <i class="fas fa-cloud-upload-alt text-muted mb-2" style="font-size: 3rem;"></i>
+                            <p class="mb-2 text-muted">Drag and drop your file here, or <a href="#" class="text-primary">browse</a></p>
+                            <small class="text-muted">Supported formats: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX (Max 10MB)</small>
+                            <input type="file" class="form-control mt-2" id="docFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+                        </div>
+                    </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="confidential">
+                        <label class="form-check-label" for="confidential">
+                            Mark as confidential (restricted access)
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Upload Document</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

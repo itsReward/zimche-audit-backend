@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Universities - ZIMCHE Audit</title>
+</head>
+<body>
+<section>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Universities</h2>
+            <p class="text-muted">Manage registered universities in the ZIMCHE system</p>
+        </div>
+        <div sec:authorize="hasRole('ADMIN')">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUniversityModal">
+                <i class="fas fa-plus me-2"></i>Add University
+            </button>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search universities..." th:value="${search}">
+                <button class="btn btn-outline-secondary" type="button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="pending">Pending Review</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select">
+                <option value="">All Types</option>
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+                <option value="technical">Technical</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Universities Grid -->
+    <div class="row">
+        <!-- University Card 1 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="stats-card h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="icon orange">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <span class="badge badge-active">Active</span>
+                </div>
+                <h5 class="mb-2">University of Zimbabwe</h5>
+                <p class="text-muted small mb-3">Public university established in 1952. Main campus in Harare with multiple faculties including Medicine, Engineering, and Law.</p>
+
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <h6 class="mb-0">15</h6>
+                        <small class="text-muted">Documents</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="mb-0">3</h6>
+                        <small class="text-muted">Audits</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="mb-0">12</h6>
+                        <small class="text-muted">Users</small>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="/universities/1" class="btn btn-sm btn-outline-primary flex-fill">View Details</a>
+                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-envelope me-2"></i>Message</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger" href="#"><i class="fas fa-ban me-2"></i>Deactivate</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- University Card 2 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="stats-card h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="icon blue">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <span class="badge badge-active">Active</span>
+                </div>
+                <h5 class="mb-2">Midlands State University</h5>
+                <p class="text-muted small mb-3">Public university located in Gweru, established in 1999. Known for its modern facilities and diverse academic programs.</p>
+
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <h6 class="mb-0">22</h6>
+                        <small class="text-muted">Documents</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="mb-0">5</h6>
+                        <small class="text-muted">Audits</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="mb-0">18</h6>
+                        <small class="text-muted">Users</small>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="/universities/2" class="btn btn-sm btn-outline-primary flex-fill">View Details</a>
+                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-envelope me-2"></i>Message</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger" href="#"><i class="fas fa-ban me-2"></i>Deactivate</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- University Card 3 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="stats-card h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="icon green">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <span class="badge badge-pending">Pending Review</span>
+                </div>
+                <h5 class="mb-2">National University of Science and Technology</h5>
+                <p class="text-muted small mb-3">Premier technical university in Bulawayo, specializing in engineering, technology, and applied sciences.</p>
+
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <h6 class="mb-0">8</h6>
+                        <small class="text-muted">Documents</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="mb-0">1</h6>
+                        <small class="text-muted">Audits</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="mb-0">7</h6>
+                        <small class="text-muted">Users</small>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="/universities/3" class="btn btn-sm btn-outline-primary flex-fill">View Details</a>
+                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-envelope me-2"></i>Message</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-success" href="#"><i class="fas fa-check me-2"></i>Approve</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- University Card 4 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="stats-card h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="icon red">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <span class="badge badge-active">Active</span>
+                </div>
+                <h5 class="mb-2">Africa University</h5>
+                <p class="text-muted small mb-3">Private Methodist university in Mutare, serving students from across Africa with diverse academic programs.</p>
+
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <h6 class="mb-0">12</h6>
+                        <small class="text-muted">Documents</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="mb-0">2</h6>
+                        <small class="text-muted">Audits</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="mb-0">9</h6>
+                        <small class="text-muted">Users</small>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="/universities/4" class="btn btn-sm btn-outline-primary flex-fill">View Details</a>
+                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-envelope me-2"></i>Message</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger" href="#"><i class="fas fa-ban me-2"></i>Deactivate</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- University Card 5 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="stats-card h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="icon orange">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <span class="badge badge-active">Active</span>
+                </div>
+                <h5 class="mb-2">Chinhoyi University of Technology</h5>
+                <p class="text-muted small mb-3">Technical university focused on agriculture, engineering, and applied sciences, located in Chinhoyi.</p>
+
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <h6 class="mb-0">19</h6>
+                        <small class="text-muted">Documents</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="mb-0">4</h6>
+                        <small class="text-muted">Audits</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="mb-0">14</h6>
+                        <small class="text-muted">Users</small>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="/universities/5" class="btn btn-sm btn-outline-primary flex-fill">View Details</a>
+                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-envelope me-2"></i>Message</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item text-danger" href="#"><i class="fas fa-ban me-2"></i>Deactivate</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- University Card 6 -->
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="stats-card h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="icon blue">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <span class="badge badge-inactive">Inactive</span>
+                </div>
+                <h5 class="mb-2">Great Zimbabwe University</h5>
+                <p class="text-muted small mb-3">Public university in Masvingo, established in 2002, offering various undergraduate and postgraduate programs.</p>
+
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <h6 class="mb-0">5</h6>
+                        <small class="text-muted">Documents</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="mb-0">0</h6>
+                        <small class="text-muted">Audits</small>
+                    </div>
+                    <div class="col-4">
+                        <h6 class="mb-0">3</h6>
+                        <small class="text-muted">Users</small>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="/universities/6" class="btn btn-sm btn-outline-primary flex-fill">View Details</a>
+                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Edit</a>
+                        <a class="dropdown-item text-success" href="#"><i class="fas fa-check me-2"></i>Activate</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav aria-label="Universities pagination">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</section>
+
+<!-- Add University Modal -->
+<div class="modal fade" id="addUniversityModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New University</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="universityName" class="form-label">University Name</label>
+                            <input type="text" class="form-control" id="universityName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="universityCode" class="form-label">University Code</label>
+                            <input type="text" class="form-control" id="universityCode" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="universityType" class="form-label">Type</label>
+                            <select class="form-select" id="universityType">
+                                <option value="public">Public</option>
+                                <option value="private">Private</option>
+                                <option value="technical">Technical</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="establishedYear" class="form-label">Established Year</label>
+                            <input type="number" class="form-control" id="establishedYear" min="1900" max="2025">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" rows="3"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="contactEmail" class="form-label">Contact Email</label>
+                            <input type="email" class="form-control" id="contactEmail">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="contactPhone" class="form-label">Contact Phone</label>
+                            <input type="tel" class="form-control" id="contactPhone">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" rows="4"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Add University</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

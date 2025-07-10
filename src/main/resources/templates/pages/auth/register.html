@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Register - ZIMCHE Audit</title>
+</head>
+<body>
+<section class="login-container">
+    <div class="login-card" style="max-width: 500px;">
+        <div class="text-center mb-4">
+            <i class="fas fa-graduation-cap text-primary" style="font-size: 3rem; color: var(--primary-orange) !important;"></i>
+            <h2 class="mt-3 mb-2">Create Account</h2>
+            <p class="text-muted">Join ZIMCHE Audit Management System</p>
+        </div>
+
+        <form th:action="@{/register}" method="post">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="firstName" name="firstName" placeholder="First Name" required>
+                        <label for="firstName">First Name</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Last Name" required>
+                        <label for="lastName">Last Name</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                <label for="email">Email Address</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="tel" class="form-control" id="phone" name="phoneNumber" placeholder="Phone">
+                <label for="phone">Phone Number</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <select class="form-select" id="university" name="universityId">
+                    <option value="">Select University</option>
+                    <option value="1">University of Zimbabwe</option>
+                    <option value="2">Midlands State University</option>
+                    <option value="3">National University of Science and Technology</option>
+                    <option value="4">Africa University</option>
+                    <option value="5">Chinhoyi University of Technology</option>
+                </select>
+                <label for="university">University</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                <label for="password">Password</label>
+            </div>
+
+            <div class="form-floating mb-4">
+                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+                <label for="confirmPassword">Confirm Password</label>
+            </div>
+
+            <div class="form-check mb-4">
+                <input type="checkbox" class="form-check-input" id="terms" required>
+                <label class="form-check-label" for="terms">
+                    I agree to the <a href="#" class="text-primary">Terms of Service</a> and <a href="#" class="text-primary">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                <i class="fas fa-user-plus me-2"></i>Create Account
+            </button>
+
+            <p class="text-center text-muted">
+                Already have an account? <a th:href="@{/login}" class="text-primary">Sign In</a>
+            </p>
+        </form>
+    </div>
+</section>
+</body>
+</html>

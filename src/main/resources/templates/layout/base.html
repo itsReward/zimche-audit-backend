@@ -1,3 +1,5 @@
+<!-- 1. BASE LAYOUT TEMPLATE -->
+<!-- src/main/resources/templates/layout/base.html -->
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
@@ -6,45 +8,423 @@
     <title th:text="${pageTitle ?: 'ZIMCHE Audit Management'}">ZIMCHE Audit Management</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" th:href="@{/static/images/favicon.ico}">
 
-    <!-- CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="/static/css/main.css" rel="stylesheet">
-
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-orange: #FF6B35;
+            --secondary-orange: #FF8C65;
+            --dark-orange: #E55A2B;
+            --light-orange: #FFF5F3;
+            --success-green: #28a745;
+            --danger-red: #dc3545;
+            --warning-yellow: #ffc107;
+            --info-blue: #17a2b8;
+            --dark-gray: #343a40;
+            --light-gray: #f8f9fa;
+            --border-color: #e9ecef;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            min-height: 100vh;
+            width: 250px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            text-decoration: none;
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav .nav-item {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-nav .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar-nav .nav-link:hover,
+        .sidebar-nav .nav-link.active {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .sidebar-nav .nav-link i {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+            transition: all 0.3s;
+        }
+
+        .main-content.expanded {
+            margin-left: 70px;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: none;
+        }
+
+        .stats-card .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .stats-card .icon.orange { background: var(--primary-orange); }
+        .stats-card .icon.blue { background: var(--info-blue); }
+        .stats-card .icon.green { background: var(--success-green); }
+        .stats-card .icon.red { background: var(--danger-red); }
+
+        .btn-primary {
+            background-color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--dark-orange);
+            border-color: var(--dark-orange);
+        }
+
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .table th {
+            background-color: var(--light-orange);
+            color: var(--dark-orange);
+            font-weight: 600;
+            border: none;
+        }
+
+        .badge-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-active { background-color: var(--success-green); color: white; }
+        .badge-inactive { background-color: var(--danger-red); color: white; }
+        .badge-pending { background-color: var(--warning-yellow); color: var(--dark-gray); }
+        .badge-completed { background-color: var(--info-blue); color: white; }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .dropdown-toggle::after {
+            display: none;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--danger-red);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        .recent-activity {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 15px;
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .form-floating > .form-control {
+            border-radius: 10px;
+        }
+
+        .form-floating > .form-control:focus {
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-50 font-inter">
-    <div class="min-h-screen flex">
-        <!-- Sidebar (only show when authenticated) -->
-        <div sec:authorize="isAuthenticated()" th:replace="layout/sidebar :: sidebar"></div>
-
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col" sec:authorize="isAuthenticated()">
-            <!-- Header -->
-            <div th:replace="layout/header :: header"></div>
-
-            <!-- Page Content -->
-            <main class="flex-1 p-6" layout:fragment="content">
-                <!-- Content will be replaced by specific pages -->
-            </main>
-
-            <!-- Footer -->
-            <div th:replace="layout/footer :: footer"></div>
-        </div>
-
-        <!-- Full width content for non-authenticated pages -->
-        <div class="flex-1" sec:authorize="!isAuthenticated()">
-            <main layout:fragment="content">
-                <!-- Content for login/register pages -->
-            </main>
-        </div>
+<body>
+<!-- Sidebar (only show when authenticated) -->
+<nav class="sidebar" sec:authorize="isAuthenticated()" id="sidebar">
+    <div class="sidebar-brand">
+        <i class="fas fa-graduation-cap me-2"></i>
+        <span class="brand-text">ZIMCHE</span>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="/static/js/main.js"></script>
+    <ul class="sidebar-nav">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/dashboard}" th:classappend="${activeNav == 'dashboard'} ? 'active' : ''">
+                <i class="fas fa-tachometer-alt"></i>
+                <span class="nav-text">Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/universities}" th:classappend="${activeNav == 'universities'} ? 'active' : ''">
+                <i class="fas fa-university"></i>
+                <span class="nav-text">Universities</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/documents}" th:classappend="${activeNav == 'documents'} ? 'active' : ''">
+                <i class="fas fa-file-alt"></i>
+                <span class="nav-text">Documents</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/audits}" th:classappend="${activeNav == 'audits'} ? 'active' : ''">
+                <i class="fas fa-clipboard-check"></i>
+                <span class="nav-text">Audits</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/messages}" th:classappend="${activeNav == 'messages'} ? 'active' : ''">
+                <i class="fas fa-envelope"></i>
+                <span class="nav-text">Messages</span>
+            </a>
+        </li>
+        <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+            <a class="nav-link" th:href="@{/admin}" th:classappend="${activeNav == 'admin'} ? 'active' : ''">
+                <i class="fas fa-cogs"></i>
+                <span class="nav-text">Admin</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/profile}" th:classappend="${activeNav == 'profile'} ? 'active' : ''">
+                <i class="fas fa-user"></i>
+                <span class="nav-text">Profile</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content" sec:authorize="isAuthenticated()" id="main-content">
+    <!-- Header -->
+    <header class="header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link d-md-none" id="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h4 class="mb-0 text-muted" th:text="${pageTitle}">Dashboard</h4>
+            </div>
+
+            <div class="d-flex align-items-center">
+                <!-- Search -->
+                <div class="me-3 d-none d-md-block">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search...">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="me-3 position-relative">
+                    <button class="btn btn-link text-muted" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <h6 class="dropdown-header">Notifications</h6>
+                        <a class="dropdown-item" href="#"><i class="fas fa-file-alt text-info me-2"></i>New document uploaded</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-user text-success me-2"></i>User registration pending</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Audit deadline approaching</a>
+                    </div>
+                </div>
+
+                <!-- User Menu -->
+                <div class="dropdown">
+                    <button class="btn btn-link d-flex align-items-center text-decoration-none" data-bs-toggle="dropdown">
+                        <div class="avatar me-2">
+                            <span sec:authentication="name" th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">U</span>
+                        </div>
+                        <span class="d-none d-md-block text-muted" sec:authentication="name">User</span>
+                        <i class="fas fa-chevron-down ms-2 text-muted"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" th:href="@{/profile}"><i class="fas fa-user me-2"></i>Profile</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a>
+                        <div class="dropdown-divider"></div>
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="p-4">
+        <div layout:fragment="content">
+            <!-- Content will be replaced by specific pages -->
+        </div>
+    </main>
+</div>
+
+<!-- Full width content for non-authenticated pages -->
+<div class="w-100" sec:authorize="!isAuthenticated()">
+    <div layout:fragment="content">
+        <!-- Content for login/register pages -->
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Sidebar toggle functionality
+    document.getElementById('sidebar-toggle')?.addEventListener('click', function() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+
+        sidebar.classList.toggle('show');
+    });
+
+    // Auto-hide mobile sidebar when clicking outside
+    document.addEventListener('click', function(event) {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+
+        if (sidebar && !sidebar.contains(event.target) && !sidebarToggle?.contains(event.target)) {
+            sidebar.classList.remove('show');
+        }
+    });
+</script>
 </body>
 </html>

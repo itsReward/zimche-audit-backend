@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::section})}">
+<head>
+  <title>Dashboard - ZIMCHE Audit</title>
+</head>
+<body>
+<section>
+  <!-- Welcome Message -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="stats-card">
+        <div class="d-flex align-items-center">
+          <div class="avatar me-3" style="width: 60px; height: 60px; font-size: 1.5rem;">
+            <span sec:authentication="name" th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">U</span>
+          </div>
+          <div>
+            <h4 class="mb-1">Welcome back, <span sec:authentication="name">User</span>!</h4>
+            <p class="text-muted mb-0" th:text="${#temporals.format(#temporals.createNow(), 'EEEE, MMMM d, yyyy')}">Wednesday, July 10, 2025</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="stats-card">
+        <div class="icon orange">
+          <i class="fas fa-university"></i>
+        </div>
+        <h3 class="mb-2" th:text="${totalUniversities ?: 12}">12</h3>
+        <p class="text-muted mb-0">Universities</p>
+        <small class="text-success"><i class="fas fa-arrow-up"></i> 2 new this month</small>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="stats-card">
+        <div class="icon blue">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <h3 class="mb-2" th:text="${totalDocuments ?: 847}">847</h3>
+        <p class="text-muted mb-0">Documents</p>
+        <small class="text-success"><i class="fas fa-arrow-up"></i> 23 this week</small>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="stats-card">
+        <div class="icon green">
+          <i class="fas fa-clipboard-check"></i>
+        </div>
+        <h3 class="mb-2" th:text="${pendingAudits ?: 15}">15</h3>
+        <p class="text-muted mb-0">Pending Audits</p>
+        <small class="text-warning"><i class="fas fa-clock"></i> 3 due soon</small>
+      </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <div class="stats-card">
+        <div class="icon red">
+          <i class="fas fa-users"></i>
+        </div>
+        <h3 class="mb-2">156</h3>
+        <p class="text-muted mb-0">Active Users</p>
+        <small class="text-info"><i class="fas fa-user-plus"></i> 8 online now</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="row">
+    <!-- Recent Activity -->
+    <div class="col-lg-8 mb-4">
+      <div class="recent-activity">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Recent Activity</h5>
+          <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-icon orange">
+            <i class="fas fa-upload"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="mb-1">Document Uploaded</h6>
+            <p class="mb-1 text-muted">University of Zimbabwe uploaded "Academic Standards Review 2025"</p>
+            <small class="text-muted">2 hours ago</small>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-icon blue">
+            <i class="fas fa-user-check"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="mb-1">Audit Completed</h6>
+            <p class="mb-1 text-muted">Peer review completed for Midlands State University</p>
+            <small class="text-muted">5 hours ago</small>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-icon green">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="mb-1">New User Registration</h6>
+            <p class="mb-1 text-muted">Dr. Sarah Johnson registered from Africa University</p>
+            <small class="text-muted">1 day ago</small>
+          </div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-icon red">
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="mb-1">Audit Deadline Alert</h6>
+            <p class="mb-1 text-muted">NUST audit submission due in 3 days</p>
+            <small class="text-muted">2 days ago</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions & Upcoming Tasks -->
+    <div class="col-lg-4">
+      <!-- Quick Actions -->
+      <div class="stats-card mb-4">
+        <h5 class="mb-3">Quick Actions</h5>
+        <div class="d-grid gap-2">
+          <a href="/universities" class="btn btn-outline-primary">
+            <i class="fas fa-university me-2"></i>Manage Universities
+          </a>
+          <a href="/documents" class="btn btn-outline-success">
+            <i class="fas fa-upload me-2"></i>Upload Document
+          </a>
+          <a href="/audits" class="btn btn-outline-warning">
+            <i class="fas fa-clipboard-check me-2"></i>Start Audit
+          </a>
+          <a href="/messages" class="btn btn-outline-info">
+            <i class="fas fa-envelope me-2"></i>Send Message
+          </a>
+        </div>
+      </div>
+
+      <!-- Upcoming Tasks -->
+      <div class="stats-card">
+        <h5 class="mb-3">Upcoming Tasks</h5>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h6 class="mb-0">Review NUST Documents</h6>
+            <small class="text-muted">Due: July 15, 2025</small>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h6 class="mb-0">UZ Site Visit Report</h6>
+            <small class="text-muted">Due: July 20, 2025</small>
+          </div>
+          <span class="badge badge-pending">Pending</span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <h6 class="mb-0">MSU Final Assessment</h6>
+            <small class="text-muted">Due: July 25, 2025</small>
+          </div>
+          <span class="badge badge-active">In Progress</span>
+        </div>
+
+        <a href="/audits" class="btn btn-sm btn-primary w-100 mt-2">View All Tasks</a>
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+</html>
