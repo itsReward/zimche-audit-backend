@@ -12,7 +12,7 @@ data class UserPrincipal(
     val fullName: String,
     val universityId: Long?,
     private val authorities: Collection<GrantedAuthority>,
-    private val isActive: Boolean
+    val isActive: Boolean
 ) : UserDetails {
 
     override fun getAuthorities(): Collection<GrantedAuthority> = authorities

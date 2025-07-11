@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::section})}">
+<head>
+    <title th:text="${university?.name + ' - ZIMCHE Audit' ?: 'University Details - ZIMCHE Audit'}">University Details - ZIMCHE Audit</title>
+</head>
+<body>
+<section>
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/dashboard}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/universities}">Universities</a></li>
+            <li class="breadcrumb-item active" aria-current="page" th:text="${university?.name ?: 'University Details'}">University Details</li>
+        </ol>
+    </nav>
+
+    <!-- University Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="university-header-card">
+                <div class="row align-items-center">
+                    <div class="col-md-2 text-center">
+                        <div class="university-logo-large" th:text="${university?.name ? #strings.substring(university.name, 0, 1) : 'U'}">U</div>
+                    </div>
+                    <div class="col-md-8">
+                        <h1 class="mb-2" th:text="${university?.name ?: 'University Name'}">University of Zimbabwe</h1>
+                        <p class="text-muted mb-2" th:text="${university?.description ?: 'Leading institution of higher education'}">Leading institution of higher education in Zimbabwe</p>
+                        <div class="university-meta">
+                            <span class="badge bg-primary me-2" th:text="${university?.type ?: 'Public'}">Public</span>
+                            <span class="badge bg-success me-2" th:text="${university?.status ?: 'Active'}">Active</span>
+                            <span class="text-muted">
+                                <i class="fas fa-map-marker-alt me-1"></i>
+                                <span th:text="${university?.location ?: 'Harare, Zimbabwe'}">Harare, Zimbabwe</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-2 text-end" sec:authorize="hasRole('ADMIN')">
+                        <div class="btn-group">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editUniversityModal">
+                                <i class="fas fa-edit me-2"></i>Edit
+                            </button>
+                            <button class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                                <span class="visually-hidden">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-plus me-2"></i>Schedule Audit</a></li>
+                                <li><a class="dropdown-item" href="#"><i class="fas fa-file-export me-2"></i>Export Data</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i>Deactivate</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Row -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="icon blue">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <h4 class="mb-2" th:text="${universityStats?.totalAudits ?: 12}">12</h4>
+                <p class="text-muted mb-0">Total Audits</p>
+                <small class="text-success"><i class="fas fa-arrow-up"></i> 2 this quarter</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="icon orange">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h4 class="mb-2" th:text="${universityStats?.totalDocuments ?: 156}">156</h4>
+                <p class="text-muted mb-0">Documents</p>
+                <small class="text-primary"><i class="fas fa-clock"></i> 8 pending review</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="icon green">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h4 class="mb-2" th:text="${universityStats?.lastAuditScore ?: '85%'}">85%</h4>
+                <p class="text-muted mb-0">Last Audit Score</p>
+                <small class="text-success"><i class="fas fa-arrow-up"></i> +5% improvement</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="icon purple">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h4 class="mb-2" th:text="${universityStats?.staffCount ?: '24,500'}">24,500</h4>
+                <p class="text-muted mb-0">Students</p>
+                <small class="text-muted">Academic year 2024/25</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="universityTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+                                <i class="fas fa-info-circle me-2"></i>Overview
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="audits-tab" data-bs-toggle="tab" data-bs-target="#audits" type="button" role="tab">
+                                <i class="fas fa-clipboard-list me-2"></i>Audits
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab">
+                                <i class="fas fa-file-alt me-2"></i>Documents
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="staff-tab" data-bs-toggle="tab" data-bs-target="#staff" type="button" role="tab">
+                                <i class="fas fa-users me-2"></i>Staff
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="compliance-tab" data-bs-toggle="tab" data-bs-target="#compliance" type="button" role="tab">
+                                <i class="fas fa-shield-alt me-2"></i>Compliance
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="universityTabsContent">
+                        <!-- Overview Tab -->
+                        <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h5>About</h5>
+                                    <p th:text="${university?.description ?: 'The University of Zimbabwe is the oldest and largest university in Zimbabwe. Located in the capital city of Harare, it was founded in 1952 and has a student population of approximately 20,000.'}">
+                                        The University of Zimbabwe is the oldest and largest university in Zimbabwe. Located in the capital city of Harare, it was founded in 1952 and has a student population of approximately 20,000.
+                                    </p>
+
+                                    <h5 class="mt-4">Recent Activity</h5>
+                                    <div class="timeline">
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker bg-primary"></div>
+                                            <div class="timeline-content">
+                                                <h6 class="timeline-title">Quality Assurance Audit Completed</h6>
+                                                <p class="timeline-description">Annual quality assurance audit completed with score of 85%</p>
+                                                <small class="text-muted">2 days ago</small>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker bg-success"></div>
+                                            <div class="timeline-content">
+                                                <h6 class="timeline-title">Accreditation Renewed</h6>
+                                                <p class="timeline-description">ZIMCHE accreditation renewed for another 5 years</p>
+                                                <small class="text-muted">1 week ago</small>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-item">
+                                            <div class="timeline-marker bg-info"></div>
+                                            <div class="timeline-content">
+                                                <h6 class="timeline-title">New Programme Approved</h6>
+                                                <p class="timeline-description">Master of Data Science programme approved by ZIMCHE</p>
+                                                <small class="text-muted">2 weeks ago</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <h5>Contact Information</h5>
+                                    <div class="contact-info">
+                                        <div class="contact-item">
+                                            <i class="fas fa-map-marker-alt text-primary"></i>
+                                            <div>
+                                                <strong>Address</strong>
+                                                <p th:text="${university?.address ?: 'Mount Pleasant, Harare, Zimbabwe'}">Mount Pleasant, Harare, Zimbabwe</p>
+                                            </div>
+                                        </div>
+                                        <div class="contact-item">
+                                            <i class="fas fa-phone text-primary"></i>
+                                            <div>
+                                                <strong>Phone</strong>
+                                                <p th:text="${university?.phone ?: '+263 4 303211'}">+263 4 303211</p>
+                                            </div>
+                                        </div>
+                                        <div class="contact-item">
+                                            <i class="fas fa-envelope text-primary"></i>
+                                            <div>
+                                                <strong>Email</strong>
+                                                <p><a th:href="'mailto:' + ${university?.email ?: 'info@uz.ac.zw'}" th:text="${university?.email ?: 'info@uz.ac.zw'}">info@uz.ac.zw</a></p>
+                                            </div>
+                                        </div>
+                                        <div class="contact-item">
+                                            <i class="fas fa-globe text-primary"></i>
+                                            <div>
+                                                <strong>Website</strong>
+                                                <p><a th:href="${university?.website ?: 'https://www.uz.ac.zw'}" target="_blank" th:text="${university?.website ?: 'www.uz.ac.zw'}">www.uz.ac.zw</a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h5 class="mt-4">Quick Stats</h5>
+                                    <div class="quick-stats">
+                                        <div class="quick-stat-item">
+                                            <span class="stat-label">Founded</span>
+                                            <span class="stat-value" th:text="${university?.foundedYear ?: '1952'}">1952</span>
+                                        </div>
+                                        <div class="quick-stat-item">
+                                            <span class="stat-label">Type</span>
+                                            <span class="stat-value" th:text="${university?.type ?: 'Public'}">Public</span>
+                                        </div>
+                                        <div class="quick-stat-item">
+                                            <span class="stat-label">Faculties</span>
+                                            <span class="stat-value" th:text="${university?.facultyCount ?: '10'}">10</span>
+                                        </div>
+                                        <div class="quick-stat-item">
+                                            <span class="stat-label">Campus Size</span>
+                                            <span class="stat-value" th:text="${university?.campusSize ?: '633 hectares'}">633 hectares</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Audits Tab -->
+                        <div class="tab-pane fade" id="audits" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Audit History</h5>
+                                <button class="btn btn-primary btn-sm" sec:authorize="hasRole('ADMIN')">
+                                    <i class="fas fa-plus me-2"></i>Schedule New Audit
+                                </button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                    <tr>
+                                        <th>Audit Type</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Score</th>
+                                        <th>Lead Auditor</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>Quality Assurance</td>
+                                        <td>2025-07-09</td>
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                        <td><span class="text-success fw-bold">85%</span></td>
+                                        <td>Dr. Sarah Chikwanha</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="View Report">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary" title="Download">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Infrastructure Review</td>
+                                        <td>2025-06-15</td>
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                        <td><span class="text-success fw-bold">92%</span></td>
+                                        <td>Prof. Michael Ndamba</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="View Report">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary" title="Download">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Academic Review</td>
+                                        <td>2025-05-20</td>
+                                        <td><span class="badge bg-warning">In Progress</span></td>
+                                        <td><span class="text-muted">Pending</span></td>
+                                        <td>Dr. Tendai Mukamuri</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary" title="View Progress">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Documents Tab -->
+                        <div class="tab-pane fade" id="documents" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>Document Repository</h5>
+                                <button class="btn btn-primary btn-sm">
+                                    <i class="fas fa-upload me-2"></i>Upload Document
+                                </button>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <div class="document-card">
+                                        <div class="document-icon">
+                                            <i class="fas fa-file-pdf text-danger"></i>
+                                        </div>
+                                        <div class="document-info">
+                                            <h6>Quality Manual 2025</h6>
+                                            <small class="text-muted">PDF • 2.3 MB</small>
+                                            <small class="text-muted d-block">Updated 2 days ago</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="document-card">
+                                        <div class="document-icon">
+                                            <i class="fas fa-file-excel text-success"></i>
+                                        </div>
+                                        <div class="document-info">
+                                            <h6>Student Enrollment Data</h6>
+                                            <small class="text-muted">XLSX • 1.8 MB</small>
+                                            <small class="text-muted d-block">Updated 1 week ago</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="document-card">
+                                        <div class="document-icon">
+                                            <i class="fas fa-file-word text-primary"></i>
+                                        </div>
+                                        <div class="document-info">
+                                            <h6>Self-Assessment Report</h6>
+                                            <small class="text-muted">DOCX • 5.1 MB</small>
+                                            <small class="text-muted d-block">Updated 3 weeks ago</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <div class="document-card">
+                                        <div class="document-icon">
+                                            <i class="fas fa-file-alt text-secondary"></i>
+                                        </div>
+                                        <div class="document-info">
+                                            <h6>Accreditation Certificate</h6>
+                                            <small class="text-muted">PDF • 512 KB</small>
+                                            <small class="text-muted d-block">Updated 1 month ago</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Staff Tab -->
+                        <div class="tab-pane fade" id="staff" role="tabpanel">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5>University Staff</h5>
+                                <button class="btn btn-primary btn-sm" sec:authorize="hasRole('ADMIN')">
+                                    <i class="fas fa-user-plus me-2"></i>Add Staff Member
+                                </button>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="staff-card">
+                                        <div class="staff-avatar">
+                                            <img src="https://via.placeholder.com/60x60?text=VC" alt="Vice Chancellor" class="rounded-circle">
+                                        </div>
+                                        <div class="staff-info">
+                                            <h6>Prof. Paul Mapfumo</h6>
+                                            <p class="text-muted mb-1">Vice Chancellor</p>
+                                            <small class="text-muted">pmapfumo@uz.ac.zw</small>
+                                        </div>
+                                        <div class="staff-actions">
+                                            <button class="btn btn-sm btn-outline-primary">Contact</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="staff-card">
+                                        <div class="staff-avatar">
+                                            <img src="https://via.placeholder.com/60x60?text=DVC" alt="Deputy Vice Chancellor" class="rounded-circle">
+                                        </div>
+                                        <div class="staff-info">
+                                            <h6>Prof. Judith Nhamo</h6>
+                                            <p class="text-muted mb-1">Deputy Vice Chancellor (Academic)</p>
+                                            <small class="text-muted">jnhamo@uz.ac.zw</small>
+                                        </div>
+                                        <div class="staff-actions">
+                                            <button class="btn btn-sm btn-outline-primary">Contact</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="staff-card">
+                                        <div class="staff-avatar">
+                                            <img src="https://via.placeholder.com/60x60?text=QA" alt="Quality Assurance Director" class="rounded-circle">
+                                        </div>
+                                        <div class="staff-info">
+                                            <h6>Dr. Chipo Mutonhodza</h6>
+                                            <p class="text-muted mb-1">Director, Quality Assurance</p>
+                                            <small class="text-muted">cmutonhodza@uz.ac.zw</small>
+                                        </div>
+                                        <div class="staff-actions">
+                                            <button class="btn btn-sm btn-outline-primary">Contact</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="staff-card">
+                                        <div class="staff-avatar">
+                                            <img src="https://via.placeholder.com/60x60?text=R" alt="Registrar" class="rounded-circle">
+                                        </div>
+                                        <div class="staff-info">
+                                            <h6>Mr. Tapiwa Guzha</h6>
+                                            <p class="text-muted mb-1">University Registrar</p>
+                                            <small class="text-muted">tguzha@uz.ac.zw</small>
+                                        </div>
+                                        <div class="staff-actions">
+                                            <button class="btn btn-sm btn-outline-primary">Contact</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Compliance Tab -->
+                        <div class="tab-pane fade" id="compliance" role="tabpanel">
+                            <h5>Compliance Status</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="compliance-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6>Academic Standards</h6>
+                                            <span class="badge bg-success">Compliant</span>
+                                        </div>
+                                        <div class="progress mb-2" style="height: 8px;">
+                                            <div class="progress-bar bg-success" style="width: 95%"></div>
+                                        </div>
+                                        <small class="text-muted">Last reviewed: June 2025</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="compliance-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6>Infrastructure Safety</h6>
+                                            <span class="badge bg-warning">Under Review</span>
+                                        </div>
+                                        <div class="progress mb-2" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" style="width: 78%"></div>
+                                        </div>
+                                        <small class="text-muted">Review in progress</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="compliance-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6>Financial Management</h6>
+                                            <span class="badge bg-success">Compliant</span>
+                                        </div>
+                                        <div class="progress mb-2" style="height: 8px;">
+                                            <div class="progress-bar bg-success" style="width: 92%"></div>
+                                        </div>
+                                        <small class="text-muted">Last reviewed: May 2025</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="compliance-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h6>Student Services</h6>
+                                            <span class="badge bg-success">Compliant</span>
+                                        </div>
+                                        <div class="progress mb-2" style="height: 8px;">
+                                            <div class="progress-bar bg-success" style="width: 88%"></div>
+                                        </div>
+                                        <small class="text-muted">Last reviewed: April 2025</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .university-header-card {
+        background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+    }
+
+    .university-logo-large {
+        width: 80px;
+        height: 80px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        margin: 0 auto;
+    }
+
+    .university-meta .badge {
+        background: rgba(255, 255, 255, 0.2) !important;
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+        height: 100%;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .icon.blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .icon.orange { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .icon.green { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .icon.purple { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--border-color);
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        left: -25px;
+        top: 8px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: 0 0 0 3px var(--border-color);
+    }
+
+    .timeline-title {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .timeline-description {
+        color: var(--dark-gray);
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-info .contact-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+    }
+
+    .contact-info .contact-item i {
+        margin-right: 1rem;
+        margin-top: 0.25rem;
+        width: 20px;
+    }
+
+    .contact-info .contact-item div {
+        flex: 1;
+    }
+
+    .contact-info .contact-item strong {
+        display: block;
+        margin-bottom: 0.25rem;
+        color: var(--dark-gray);
+    }
+
+    .contact-info .contact-item p {
+        margin: 0;
+        color: var(--dark-gray);
+    }
+
+    .quick-stats {
+        background: var(--light-gray);
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    .quick-stat-item {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .quick-stat-item:last-child {
+        border-bottom: none;
+    }
+
+    .stat-label {
+        font-weight: 500;
+        color: var(--dark-gray);
+    }
+
+    .stat-value {
+        font-weight: 600;
+        color: var(--primary-orange);
+        margin-left: auto;
+    }
+
+    .document-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        transition: all 0.2s;
+        cursor: pointer;
+        height: 100%;
+    }
+
+    .document-card:hover {
+        border-color: var(--primary-orange);
+        box-shadow: 0 2px 10px rgba(255, 107, 53, 0.1);
+    }
+
+    .document-icon {
+        text-align: center;
+        margin-bottom: 0.75rem;
+    }
+
+    .document-icon i {
+        font-size: 2rem;
+    }
+
+    .document-info h6 {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--dark-gray);
+    }
+
+    .staff-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        display: flex;
+        align-items: center;
+        transition: all 0.2s;
+    }
+
+    .staff-card:hover {
+        border-color: var(--primary-orange);
+        box-shadow: 0 2px 10px rgba(255, 107, 53, 0.1);
+    }
+
+    .staff-avatar {
+        margin-right: 1rem;
+    }
+
+    .staff-avatar img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+    }
+
+    .staff-info {
+        flex: 1;
+    }
+
+    .staff-info h6 {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: var(--dark-gray);
+    }
+
+    .staff-info p {
+        margin-bottom: 0.25rem;
+        font-size: 0.9rem;
+    }
+
+    .staff-actions {
+        margin-left: 1rem;
+    }
+
+    .compliance-item {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .compliance-item h6 {
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--dark-gray);
+    }
+
+    .progress {
+        background-color: #e9ecef;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 12px;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        color: var(--dark-gray);
+        padding: 1rem 1.5rem;
+        font-weight: 500;
+    }
+
+    .nav-tabs .nav-link.active {
+        background: var(--primary-orange);
+        color: white;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .nav-tabs .nav-link:hover {
+        border: none;
+        color: var(--primary-orange);
+    }
+
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: var(--dark-gray);
+        background: var(--light-gray);
+    }
+
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "›";
+        color: var(--primary-orange);
+        font-weight: 600;
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-orange);
+        text-decoration: none;
+    }
+
+    .breadcrumb-item a:hover {
+        text-decoration: underline;
+    }
+
+    .breadcrumb-item.active {
+        color: var(--dark-gray);
+    }
+
+    @media (max-width: 768px) {
+        .university-header-card {
+            text-align: center;
+        }
+
+        .university-header-card .row > div {
+            margin-bottom: 1rem;
+        }
+
+        .stats-card {
+            margin-bottom: 1rem;
+        }
+
+        .staff-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .staff-avatar {
+            margin-right: 0;
+            margin-bottom: 1rem;
+        }
+
+        .staff-actions {
+            margin-left: 0;
+            margin-top: 1rem;
+        }
+    }
+</style>
+</body>
+</html>

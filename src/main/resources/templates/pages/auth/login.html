@@ -1,58 +1,438 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/base :: layout(~{::title}, ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login - ZIMCHE Audit</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ZIMCHE Audit Management</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-orange: #FF6B35;
+            --secondary-orange: #FF8C65;
+            --dark-orange: #E55A2B;
+            --light-orange: #FFF5F3;
+            --dark-gray: #343a40;
+            --light-gray: #f8f9fa;
+            --border-color: #e9ecef;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            min-height: 600px;
+        }
+
+        .login-left {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.95) 0%, rgba(229, 90, 43, 0.95) 100%),
+            url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="40" r="3" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            color: white;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><path d="M 0 100 Q 50 50 100 100 T 200 100 L 200 200 L 0 200 Z" fill="rgba(255,255,255,0.05)"/></svg>') no-repeat bottom;
+            background-size: cover;
+        }
+
+        .login-left-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .login-right {
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-floating {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-floating > .form-control {
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            padding: 1rem 0.75rem;
+            height: auto;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-floating > .form-control:focus {
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+        }
+
+        .form-floating > label {
+            padding: 1rem 0.75rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+            background: linear-gradient(135deg, var(--dark-orange) 0%, var(--primary-orange) 100%);
+        }
+
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-orange);
+            border-color: var(--primary-orange);
+        }
+
+        .text-primary {
+            color: var(--primary-orange) !important;
+        }
+
+        .demo-credentials {
+            background: var(--light-orange);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-left: 4px solid var(--primary-orange);
+        }
+
+        .demo-credentials h6 {
+            color: var(--dark-orange);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .credential-item {
+            background: white;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(255, 107, 53, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .credential-item:hover {
+            background: rgba(255, 107, 53, 0.05);
+            border-color: rgba(255, 107, 53, 0.2);
+        }
+
+        .credential-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .stats {
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                border-radius: 0;
+                min-height: 100vh;
+            }
+
+            .login-left {
+                padding: 40px 20px;
+                min-height: 300px;
+            }
+
+            .login-right {
+                padding: 40px 20px;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .floating-elements::before,
+        .floating-elements::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-elements::before {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            right: 20%;
+            animation-delay: -2s;
+        }
+
+        .floating-elements::after {
+            width: 40px;
+            height: 40px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: -4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
 </head>
 <body>
-<section class="login-container">
-    <div class="login-card">
-        <div class="text-center mb-4">
-            <i class="fas fa-graduation-cap text-primary" style="font-size: 3rem; color: var(--primary-orange) !important;"></i>
-            <h2 class="mt-3 mb-2">Welcome Back</h2>
-            <p class="text-muted">Sign in to your ZIMCHE account</p>
-        </div>
+<div class="login-container">
+    <div class="row g-0 h-100">
+        <!-- Left Side - Branding -->
+        <div class="col-lg-6">
+            <div class="login-left">
+                <div class="floating-elements"></div>
+                <div class="login-left-content">
+                    <div class="logo">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h1 class="h2 mb-4">Welcome Back</h1>
+                    <p class="lead mb-4">Sign in to your ZIMCHE account to access the University Audit Management System</p>
 
-        <div th:if="${error}" class="alert alert-danger">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            <span th:text="${error}">Invalid credentials</span>
-        </div>
-
-        <form th:action="@{/login}" method="post">
-            <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="email" name="username" placeholder="Email" required>
-                <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
-            </div>
-
-            <div class="form-floating mb-4">
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
-                <label for="password"><i class="fas fa-lock me-2"></i>Password</label>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="remember" name="remember-me">
-                    <label class="form-check-label" for="remember">Remember me</label>
+                    <div class="stats">
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <div class="stat-number">12+</div>
+                                    <div class="stat-label">Universities</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <div class="stat-number">850+</div>
+                                    <div class="stat-label">Users</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <div class="stat-number">200+</div>
+                                    <div class="stat-label">Audits</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <a href="#" class="text-primary">Forgot Password?</a>
             </div>
+        </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
-                <i class="fas fa-sign-in-alt me-2"></i>Sign In
-            </button>
+        <!-- Right Side - Login Form -->
+        <div class="col-lg-6">
+            <div class="login-right">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold mb-2">Sign In</h3>
+                    <p class="text-muted">Enter your credentials to access your account</p>
+                </div>
 
-            <p class="text-center text-muted">
-                Don't have an account? <a th:href="@{/register}" class="text-primary">Create Account</a>
-            </p>
-        </form>
+                <!-- Error Message -->
+                <div th:if="${param.error}" class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span th:text="${param.error} ? 'Invalid email or password. Please try again.' : 'Login failed. Please check your credentials.'">
+                            Invalid email or password. Please try again.
+                        </span>
+                </div>
 
-        <!-- Demo Credentials -->
-        <div class="mt-4 p-3 bg-light rounded">
-            <h6 class="mb-2">Demo Credentials:</h6>
-            <p class="mb-1 small"><strong>Admin:</strong> admin@zimche.ac.zw / admin123</p>
-            <p class="mb-1 small"><strong>University:</strong> university@zimche.ac.zw / uni123</p>
-            <p class="mb-0 small"><strong>Reviewer:</strong> reviewer@zimche.ac.zw / rev123</p>
+                <!-- Success Message -->
+                <div th:if="${param.logout}" class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    You have been logged out successfully.
+                </div>
+
+                <!-- Login Form -->
+                <form th:action="@{/login}" method="post">
+                    <div class="form-floating">
+                        <input type="email" class="form-control" id="email" name="username"
+                               placeholder="name@example.com" required autocomplete="email"
+                               th:value="${param.username}">
+                        <label for="email">
+                            <i class="fas fa-envelope me-2"></i>Email Address
+                        </label>
+                    </div>
+
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="password" name="password"
+                               placeholder="Password" required autocomplete="current-password">
+                        <label for="password">
+                            <i class="fas fa-lock me-2"></i>Password
+                        </label>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember" name="remember-me">
+                            <label class="form-check-label" for="remember">
+                                Remember me
+                            </label>
+                        </div>
+                        <a href="#" class="text-primary text-decoration-none">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mb-4">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                    </button>
+                </form>
+
+                <div class="text-center mb-4">
+                    <p class="text-muted mb-0">
+                        Don't have an account?
+                        <a th:href="@{/register}" class="text-primary text-decoration-none fw-medium">Create Account</a>
+                    </p>
+                </div>
+
+                <!-- Demo Credentials -->
+                <!--<div class="demo-credentials">
+                    <h6><i class="fas fa-info-circle me-2"></i>Demo Credentials</h6>
+
+                    <div class="credential-item" onclick="fillCredentials('admin@zimche.ac.zw', 'admin123')">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="text-primary">Administrator</strong>
+                                <div class="small text-muted">admin@zimche.ac.zw</div>
+                            </div>
+                            <span class="badge bg-danger">ADMIN</span>
+                        </div>
+                    </div>
+
+                    <div class="credential-item" onclick="fillCredentials('university@zimche.ac.zw', 'uni123')">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="text-success">University Staff</strong>
+                                <div class="small text-muted">university@zimche.ac.zw</div>
+                            </div>
+                            <span class="badge bg-primary">STAFF</span>
+                        </div>
+                    </div>
+
+                    <div class="credential-item" onclick="fillCredentials('reviewer@zimche.ac.zw', 'rev123')">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="text-info">Peer Reviewer</strong>
+                                <div class="small text-muted">reviewer@zimche.ac.zw</div>
+                            </div>
+                            <span class="badge bg-info">REVIEWER</span>
+                        </div>
+                    </div>
+                </div>-->
+            </div>
         </div>
     </div>
-</section>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Function to fill login credentials
+    function fillCredentials(email, password) {
+        document.getElementById('email').value = email;
+        document.getElementById('password').value = password;
+
+        // Add visual feedback
+        const emailField = document.getElementById('email');
+        const passwordField = document.getElementById('password');
+
+        emailField.classList.add('is-valid');
+        passwordField.classList.add('is-valid');
+
+        setTimeout(() => {
+            emailField.classList.remove('is-valid');
+            passwordField.classList.remove('is-valid');
+        }, 1500);
+    }
+
+    // Form validation and enhancement
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const submitBtn = document.querySelector('button[type="submit"]');
+
+        form.addEventListener('submit', function(e) {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Signing In...';
+            submitBtn.disabled = true;
+        });
+
+        // Auto-focus on email field
+        document.getElementById('email').focus();
+    });
+</script>
 </body>
 </html>

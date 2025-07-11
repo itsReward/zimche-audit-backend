@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Profile - ZIMCHE Audit</title>
+</head>
+<body>
+<section>
+    <!-- Profile Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="profile-header-card">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <div class="profile-avatar">
+                            <span th:text="${(userFullName ?: 'U').substring(0, 1).toUpperCase()}">U</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h2 class="mb-1" th:text="${userFullName ?: 'User Name'}">User Name</h2>
+                        <p class="text-muted mb-2" th:text="${userEmail ?: 'user@example.com'}">user@example.com</p>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="badge bg-success" th:if="${isActive}">
+                                <i class="fas fa-check-circle me-1"></i>Active
+                            </span>
+                            <span class="badge bg-danger" th:unless="${isActive}">
+                                <i class="fas fa-times-circle me-1"></i>Inactive
+                            </span>
+                            <span class="badge bg-primary" th:each="authority : ${userAuthorities}" th:text="${authority.authority}">ROLE_USER</span>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                Member since <span th:text="${memberSince ?: 'Unknown'}">January 2023</span>
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="btn-group">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                <i class="fas fa-edit me-2"></i>Edit Profile
+                            </button>
+                            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card text-center">
+                <div class="icon blue mx-auto">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <h3 class="mb-2" th:text="${totalAudits ?: 0}">23</h3>
+                <p class="text-muted mb-0">Total Audits</p>
+                <small class="text-success">
+                    <span th:text="${completedAudits ?: 0}">18</span> completed
+                </small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card text-center">
+                <div class="icon green mx-auto">
+                    <i class="fas fa-file-upload"></i>
+                </div>
+                <h3 class="mb-2" th:text="${documentsUploaded ?: 0}">147</h3>
+                <p class="text-muted mb-0">Documents Uploaded</p>
+                <small class="text-info">This year</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card text-center">
+                <div class="icon orange mx-auto">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3 class="mb-2" th:text="${reportsGenerated ?: 0}">12</h3>
+                <p class="text-muted mb-0">Reports Generated</p>
+                <small class="text-warning">This quarter</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card text-center">
+                <div class="icon purple mx-auto">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted d-block">Last Login</small>
+                    <span class="h6" th:text="${(lastLogin ?: 'Never').substring(0, 10)}">2025-07-11</span>
+                </div>
+                <p class="text-muted mb-0">Activity</p>
+                <small class="text-success">Online now</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Details and Activity -->
+    <div class="row">
+        <!-- Profile Information -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Profile Information</h5>
+                    <button class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="profile-field mb-3">
+                                <label class="form-label text-muted">Full Name</label>
+                                <p class="mb-0" th:text="${userFullName ?: 'Not provided'}">John Doe</p>
+                            </div>
+                            <div class="profile-field mb-3">
+                                <label class="form-label text-muted">Email Address</label>
+                                <p class="mb-0" th:text="${userEmail ?: 'Not provided'}">john.doe@zimche.ac.zw</p>
+                            </div>
+                            <div class="profile-field mb-3">
+                                <label class="form-label text-muted">User ID</label>
+                                <p class="mb-0" th:text="${user?.id ?: 'N/A'}">1</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="profile-field mb-3">
+                                <label class="form-label text-muted">University ID</label>
+                                <p class="mb-0" th:text="${universityId ?: 'Not assigned'}">Not assigned</p>
+                            </div>
+                            <div class="profile-field mb-3">
+                                <label class="form-label text-muted">Role</label>
+                                <div>
+                                    <span class="badge bg-primary me-1" th:each="authority : ${userAuthorities}" th:text="${#strings.replace(authority.authority, 'ROLE_', '')}">ADMIN</span>
+                                </div>
+                            </div>
+                            <div class="profile-field mb-3">
+                                <label class="form-label text-muted">Account Status</label>
+                                <p class="mb-0">
+                                    <span class="badge bg-success" th:if="${isActive}">
+                                        <i class="fas fa-check-circle me-1"></i>Active
+                                    </span>
+                                    <span class="badge bg-danger" th:unless="${isActive}">
+                                        <i class="fas fa-times-circle me-1"></i>Inactive
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Security Settings</h5>
+                </div>
+                <div class="card-body">
+                    <div class="security-setting d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-1">Password</h6>
+                            <small class="text-muted">Last changed 3 months ago</small>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            Change Password
+                        </button>
+                    </div>
+                    <div class="security-setting d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-1">Two-Factor Authentication</h6>
+                            <small class="text-muted">Add an extra layer of security</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="twoFactorSwitch">
+                            <label class="form-check-label" for="twoFactorSwitch">Disabled</label>
+                        </div>
+                    </div>
+                    <div class="security-setting d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Login Notifications</h6>
+                            <small class="text-muted">Get notified of new sign-ins</small>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="loginNotificationsSwitch" checked>
+                            <label class="form-check-label" for="loginNotificationsSwitch">Enabled</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity & Recent Actions -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Activity Overview</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="activityChart" height="200"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="activity-timeline">
+                        <div class="activity-item">
+                            <div class="activity-icon bg-primary">
+                                <i class="fas fa-sign-in-alt"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="mb-1">Logged into system</p>
+                                <small class="text-muted">2 hours ago</small>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon bg-success">
+                                <i class="fas fa-file-upload"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="mb-1">Uploaded compliance document</p>
+                                <small class="text-muted">5 hours ago</small>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon bg-info">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="mb-1">Generated monthly report</p>
+                                <small class="text-muted">1 day ago</small>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon bg-warning">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="mb-1">Updated audit findings</p>
+                                <small class="text-muted">2 days ago</small>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon bg-secondary">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="mb-1">Joined team meeting</p>
+                                <small class="text-muted">3 days ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="#" class="btn btn-outline-primary btn-sm">View All Activity</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" th:value="${userFullName}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" th:value="${userEmail}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" placeholder="Enter phone number">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-control" placeholder="Enter department">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bio</label>
+                        <textarea class="form-control" rows="3" placeholder="Tell us about yourself"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Password</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" required>
+                        <div class="form-text">Password must be at least 8 characters long</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Update Password</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-header-card {
+        background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
+        border-radius: 16px;
+        padding: 2rem;
+        color: white;
+        box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3);
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 600;
+        color: white;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+        height: 100%;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        margin-bottom: 1rem;
+    }
+
+    .icon.blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .icon.green { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .icon.orange { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .icon.purple { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+
+    .card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .profile-field label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .profile-field p {
+        font-size: 1rem;
+        color: var(--dark-gray);
+    }
+
+    .security-setting {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .security-setting:last-child {
+        border-bottom: none;
+    }
+
+    .activity-timeline {
+        padding: 1rem;
+    }
+
+    .activity-item {
+        display: flex;
+        align-content: start;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .activity-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .activity-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        color: white;
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .activity-content {
+        flex: 1;
+    }
+
+    .activity-content p {
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .modal-content {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 1px solid #e1e5e9;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-orange);
+        border-color: var(--primary-orange);
+    }
+
+    .badge {
+        font-weight: 500;
+    }
+</style>
+
+<script>
+    // Initialize activity chart when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Audits', 'Documents', 'Reports', 'Reviews'],
+                datasets: [{
+                    data: [23, 147, 12, 8],
+                    backgroundColor: ['#667eea', '#4facfe', '#f093fb', '#fa709a'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    // Toggle switches functionality
+    document.getElementById('twoFactorSwitch')?.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        label.textContent = this.checked ? 'Enabled' : 'Disabled';
+    });
+
+    document.getElementById('loginNotificationsSwitch')?.addEventListener('change', function() {
+        const label = this.nextElementSibling;
+        label.textContent = this.checked ? 'Enabled' : 'Disabled';
+    });
+</script>
+</body>
+</html>

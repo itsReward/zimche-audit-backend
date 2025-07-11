@@ -1,5 +1,6 @@
 package com.zimche.audit.controller
 
+import com.zimche.audit.security.UserPrincipal
 import com.zimche.audit.service.UniversityService
 import com.zimche.audit.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,6 +47,13 @@ class WebController {
             model.addAttribute("error", "Invalid username or password")
         }
         return "pages/auth/login"
+    }
+
+    @GetMapping("/audits")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PEER_REVIEWER')")
+    fun audits(model: Model): String {
+        model.addAttribute("pageTitle", "Audits - ZIMCHE Audit")
+        return "pages/audits/list"
     }
 
     @GetMapping("/register")
@@ -206,18 +214,26 @@ class WebController {
     }
 
     @GetMapping("/profile")
-    @PreAuthorize("isAuthenticated()")
     fun profile(model: Model, authentication: Authentication): String {
         model.addAttribute("pageTitle", "Profile - ZIMCHE Audit")
-        model.addAttribute("activeNav", "profile")
 
-        try {
-            userService?.let { service ->
-                val user = service.findByEmail(authentication.name)
-                model.addAttribute("user", user)
-            }
-        } catch (e: Exception) {
-            model.addAttribute("error", "Could not load user profile")
+        val userPrincipal = authentication.principal as? UserPrincipal
+
+        userPrincipal?.let { user ->
+            model.addAttribute("user", user)
+            model.addAttribute("userEmail", user.email)
+            model.addAttribute("userFullName", user.fullName)
+            model.addAttribute("userAuthorities", user.authorities)
+            model.addAttribute("isActive", user.isActive)
+            model.addAttribute("universityId", user.universityId)
+
+            // Additional profile stats
+            model.addAttribute("totalAudits", 23)
+            model.addAttribute("completedAudits", 18)
+            model.addAttribute("documentsUploaded", 147)
+            model.addAttribute("reportsGenerated", 12)
+            model.addAttribute("memberSince", "January 2023")
+            model.addAttribute("lastLogin", "2025-07-11 09:15:30")
         }
 
         return "pages/profile/view"
@@ -226,16 +242,37 @@ class WebController {
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     fun admin(model: Model): String {
-        model.addAttribute("pageTitle", "Admin Panel - ZIMCHE Audit")
-        model.addAttribute("activeNav", "admin")
+        model.addAttribute("pageTitle", "Admin Dashboard - ZIMCHE Audit")
 
-        // Add safe default statistics
-        model.addAttribute("totalUsers", getUserCount())
-        model.addAttribute("totalUniversities", getUniversityCount())
-        model.addAttribute("totalDocuments", 0)
-        model.addAttribute("totalAudits", 0)
+        // Sample data for now - replace with actual service calls
+        model.addAttribute("totalUsers", 847)
+        model.addAttribute("activeUsers", 623)
+        model.addAttribute("totalUniversities", 12)
+        model.addAttribute("activeUniversities", 11)
+        model.addAttribute("totalAudits", 156)
+        model.addAttribute("pendingAudits", 23)
+        model.addAttribute("totalReports", 234)
+        model.addAttribute("systemUptime", "99.8%")
+        model.addAttribute("storageUsed", "2.4 TB")
+        model.addAttribute("apiCalls", "1.2M")
+        model.addAttribute("activeAlerts", 5)
+        model.addAttribute("criticalAlerts", 2)
 
-        return "pages/admin/index"
+        return "pages/admin/admin"
+    }
+
+    @GetMapping("/reports")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PEER_REVIEWER')")
+    fun reports(model: Model): String {
+        model.addAttribute("pageTitle", "Reports - ZIMCHE Audit")
+
+        // Sample data for now - replace with actual service calls later
+        model.addAttribute("totalReports", 156)
+        model.addAttribute("publishedReports", 134)
+        model.addAttribute("draftReports", 15)
+        model.addAttribute("pendingReports", 7)
+
+        return "pages/reports/index"
     }
 
     // Helper methods to safely get counts

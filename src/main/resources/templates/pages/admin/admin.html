@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Admin Dashboard - ZIMCHE Audit</title>
+</head>
+<body>
+<section>
+    <!-- Admin Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fas fa-shield-alt text-danger me-2"></i>
+                System Administration
+            </h2>
+            <p class="text-muted">Manage users, universities, and system settings</p>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#systemHealthModal">
+                <i class="fas fa-heartbeat me-2"></i>System Health
+            </button>
+            <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#alertsModal">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                Alerts <span class="badge bg-danger" th:text="${activeAlerts ?: 5}">5</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- System Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="admin-card border-left-primary">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Users</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalUsers ?: 847}">847</div>
+                            <div class="text-xs text-success">
+                                <span th:text="${activeUsers ?: 623}">623</span> active
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="admin-card border-left-success">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Universities</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${totalUniversities ?: 12}">12</div>
+                            <div class="text-xs text-success">
+                                <span th:text="${activeUniversities ?: 11}">11</span> active
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-university fa-2x text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="admin-card border-left-info">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">System Uptime</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${systemUptime ?: '99.8%'}">99.8%</div>
+                            <div class="text-xs text-success">
+                                <i class="fas fa-arrow-up"></i> Excellent
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-server fa-2x text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="admin-card border-left-warning">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Active Alerts</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${activeAlerts ?: 5}">5</div>
+                            <div class="text-xs text-danger">
+                                <span th:text="${criticalAlerts ?: 2}">2</span> critical
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <button class="btn btn-outline-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <i class="fas fa-user-plus me-2"></i>Add User
+                            </button>
+                            <button class="btn btn-outline-success w-100 mb-3" data-bs-toggle="modal" data-bs-target="#addUniversityModal">
+                                <i class="fas fa-university me-2"></i>Add University
+                            </button>
+                            <button class="btn btn-outline-info w-100">
+                                <i class="fas fa-download me-2"></i>Export Data
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-outline-warning w-100 mb-3" data-bs-toggle="modal" data-bs-target="#systemSettingsModal">
+                                <i class="fas fa-cogs me-2"></i>System Settings
+                            </button>
+                            <button class="btn btn-outline-secondary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#backupModal">
+                                <i class="fas fa-database me-2"></i>Backup System
+                            </button>
+                            <button class="btn btn-outline-dark w-100">
+                                <i class="fas fa-chart-line me-2"></i>Analytics
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="fas fa-bell me-2"></i>Recent Alerts</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="alert-list">
+                        <div class="alert-item border-left-danger">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="mb-1">High CPU Usage</h6>
+                                    <p class="mb-0 text-muted">Server CPU usage at 85%</p>
+                                </div>
+                                <small class="text-muted">2 min ago</small>
+                            </div>
+                        </div>
+                        <div class="alert-item border-left-warning">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="mb-1">Storage Warning</h6>
+                                    <p class="mb-0 text-muted">Disk space 78% full</p>
+                                </div>
+                                <small class="text-muted">15 min ago</small>
+                            </div>
+                        </div>
+                        <div class="alert-item border-left-info">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="mb-1">New User Registration</h6>
+                                    <p class="mb-0 text-muted">5 new users registered</p>
+                                </div>
+                                <small class="text-muted">1 hour ago</small>
+                            </div>
+                        </div>
+                        <div class="alert-item border-left-success">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="mb-1">Backup Completed</h6>
+                                    <p class="mb-0 text-muted">Daily backup successful</p>
+                                </div>
+                                <small class="text-muted">3 hours ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="#" class="btn btn-outline-primary btn-sm">View All Alerts</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Tables -->
+    <div class="row">
+        <!-- User Management -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>User Management</h5>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-2">JS</div>
+                                        <div>
+                                            <div class="fw-medium">John Smith</div>
+                                            <small class="text-muted">john.smith@uz.ac.zw</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-primary">ADMIN</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" title="Disable">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-2">MD</div>
+                                        <div>
+                                            <div class="fw-medium">Mary Davis</div>
+                                            <small class="text-muted">mary.davis@nust.ac.zw</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-info">PEER_REVIEWER</span></td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" title="Disable">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="user-avatar me-2">RW</div>
+                                        <div>
+                                            <div class="fw-medium">Robert Wilson</div>
+                                            <small class="text-muted">robert.wilson@msu.ac.zw</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-secondary">UNIVERSITY_STAFF</span></td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-success" title="Approve">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-outline-danger" title="Reject">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="#" class="btn btn-outline-primary btn-sm">Manage All Users</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- University Management -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-university me-2"></i>University Management</h5>
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addUniversityModal">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th>University</th>
+                                <th>Users</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div class="fw-medium">University of Zimbabwe</div>
+                                        <small class="text-muted">Harare</small>
+                                    </div>
+                                </td>
+                                <td>247</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-secondary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div class="fw-medium">NUST</div>
+                                        <small class="text-muted">Bulawayo</small>
+                                    </div>
+                                </td>
+                                <td>156</td>
+                                <td><span class="badge bg-success">Active</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-secondary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div class="fw-medium">Midlands State University</div>
+                                        <small class="text-muted">Gweru</small>
+                                    </div>
+                                </td>
+                                <td>89</td>
+                                <td><span class="badge bg-warning">Under Review</span></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-outline-success" title="Approve">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="#" class="btn btn-outline-success btn-sm">Manage All Universities</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Performance Charts -->
+    <div class="row mt-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-area me-2"></i>System Performance</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Resource Usage</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="resourceChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" required>
+                            <option value="">Select role</option>
+                            <option value="ADMIN">Administrator</option>
+                            <option value="PEER_REVIEWER">Peer Reviewer</option>
+                            <option value="UNIVERSITY_STAFF">University Staff</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">University</label>
+                        <select class="form-select">
+                            <option value="">Select university (optional)</option>
+                            <option value="uz">University of Zimbabwe</option>
+                            <option value="nust">NUST</option>
+                            <option value="msu">Midlands State University</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Create User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add University Modal -->
+<div class="modal fade" id="addUniversityModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New University</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">University Name</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Abbreviation</label>
+                        <input type="text" class="form-control" placeholder="e.g., UZ, NUST">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Contact Email</label>
+                        <input type="email" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Website</label>
+                        <input type="url" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success">Add University</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .admin-card {
+        background: #fff;
+        border: 1px solid #e3e6f0;
+        border-radius: 0.35rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        margin-bottom: 1.5rem;
+    }
+
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+
+    .border-left-danger {
+        border-left: 0.25rem solid #e74a3b !important;
+    }
+
+    .text-xs {
+        font-size: 0.7rem;
+    }
+
+    .font-weight-bold {
+        font-weight: 700;
+    }
+
+    .text-gray-800 {
+        color: #5a5c69;
+    }
+
+    .alert-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .alert-item {
+        padding: 1rem;
+        border-bottom: 1px solid #e3e6f0;
+        border-left: 0.25rem solid #ddd;
+    }
+
+    .alert-item:last-child {
+        border-bottom: none;
+    }
+
+    .alert-item h6 {
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--primary-orange);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        border-radius: 0.35rem;
+    }
+
+    .card-header {
+        background-color: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .card-header.bg-primary {
+        background-color: #4e73df !important;
+    }
+
+    .card-header.bg-warning {
+        background-color: #f6c23e !important;
+    }
+
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #858796;
+        font-size: 0.85rem;
+    }
+
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .badge {
+        font-weight: 500;
+        font-size: 0.75rem;
+    }
+
+    .modal-content {
+        border-radius: 0.35rem;
+        border: none;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    .form-control, .form-select {
+        border-color: #d1d3e2;
+        border-radius: 0.35rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-orange);
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+    }
+</style>
+
+<script>
+    // Initialize charts when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Performance chart
+        const ctx1 = document.getElementById('performanceChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                datasets: [{
+                    label: 'CPU Usage (%)',
+                    data: [20, 15, 35, 65, 45, 30, 25],
+                    borderColor: '#4e73df',
+                    backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Memory Usage (%)',
+                    data: [40, 35, 45, 55, 50, 45, 40],
+                    borderColor: '#1cc88a',
+                    backgroundColor: 'rgba(28, 200, 138, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        // Resource usage pie chart
+        const ctx2 = document.getElementById('resourceChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Used Storage', 'Free Storage', 'Cached Data'],
+                datasets: [{
+                    data: [65, 25, 10],
+                    backgroundColor: ['#e74a3b', '#1cc88a', '#f6c23e'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<!-- System Health Modal -->
+<div class="modal fade" id="systemHealthModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-heartbeat me-2"></i>System Health Monitor
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="health-metric">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>CPU Usage</span>
+                                <span class="badge bg-success">Normal</span>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" style="width: 45%"></div>
+                            </div>
+                            <small class="text-muted">45% of capacity</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="health-metric">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Memory Usage</span>
+                                <span class="badge bg-warning">Moderate</span>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-warning" style="width: 72%"></div>
+                            </div>
+                            <small class="text-muted">72% of 16GB RAM</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="health-metric">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Disk Usage</span>
+                                <span class="badge bg-warning">High</span>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-warning" style="width: 78%"></div>
+                            </div>
+                            <small class="text-muted" th:text="${storageUsed ?: '2.4 TB'} + ' of 3TB'">2.4TB of 3TB</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="health-metric">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span>Network Traffic</span>
+                                <span class="badge bg-success">Low</span>
+                            </div>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" style="width: 25%"></div>
+                            </div>
+                            <small class="text-muted">125 Mbps average</small>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <h4 class="text-success" th:text="${systemUptime ?: '99.8%'}">99.8%</h4>
+                        <small class="text-muted">Uptime</small>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h4 class="text-info" th:text="${apiCalls ?: '1.2M'}">1.2M</h4>
+                        <small class="text-muted">API Calls Today</small>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h4 class="text-primary">247ms</h4>
+                        <small class="text-muted">Avg Response Time</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Detailed Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alerts Modal -->
+<div class="modal fade" id="alertsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>System Alerts
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger" role="alert">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="alert-heading">Critical: Database Connection Pool</h6>
+                            <p class="mb-0">Database connection pool is running low. Consider increasing pool size.</p>
+                            <small class="text-muted">2 minutes ago</small>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm">Resolve</button>
+                    </div>
+                </div>
+                <div class="alert alert-danger" role="alert">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="alert-heading">Critical: High CPU Usage</h6>
+                            <p class="mb-0">Server CPU usage has exceeded 85% for the last 10 minutes.</p>
+                            <small class="text-muted">5 minutes ago</small>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm">Investigate</button>
+                    </div>
+                </div>
+                <div class="alert alert-warning" role="alert">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="alert-heading">Warning: Storage Space</h6>
+                            <p class="mb-0">Disk storage is 78% full. Consider archiving old data.</p>
+                            <small class="text-muted">15 minutes ago</small>
+                        </div>
+                        <button class="btn btn-outline-warning btn-sm">Schedule Cleanup</button>
+                    </div>
+                </div>
+                <div class="alert alert-warning" role="alert">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="alert-heading">Warning: Failed Login Attempts</h6>
+                            <p class="mb-0">Multiple failed login attempts detected from IP 192.168.1.45.</p>
+                            <small class="text-muted">30 minutes ago</small>
+                        </div>
+                        <button class="btn btn-outline-warning btn-sm">Block IP</button>
+                    </div>
+                </div>
+                <div class="alert alert-info" role="alert">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="alert-heading">Info: System Update Available</h6>
+                            <p class="mb-0">A new system update (v2.1.3) is available for installation.</p>
+                            <small class="text-muted">2 hours ago</small>
+                        </div>
+                        <button class="btn btn-outline-info btn-sm">Schedule Update</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning">Mark All as Read</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Settings Modal -->
+<div class="modal fade" id="systemSettingsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-cogs me-2"></i>System Settings
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Security Settings</h6>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="requireTwoFactor" checked>
+                                <label class="form-check-label" for="requireTwoFactor">
+                                    Require Two-Factor Authentication
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enforcePasswordPolicy" checked>
+                                <label class="form-check-label" for="enforcePasswordPolicy">
+                                    Enforce Strong Password Policy
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Session Timeout (minutes)</label>
+                            <input type="number" class="form-control" value="30" min="5" max="480">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>System Preferences</h6>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enableEmailNotifications" checked>
+                                <label class="form-check-label" for="enableEmailNotifications">
+                                    Enable Email Notifications
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="enableAuditLogging" checked>
+                                <label class="form-check-label" for="enableAuditLogging">
+                                    Enable Audit Logging
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Max File Upload Size (MB)</label>
+                            <input type="number" class="form-control" value="50" min="1" max="500">
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Backup Settings</h6>
+                        <div class="mb-3">
+                            <label class="form-label">Automatic Backup Schedule</label>
+                            <select class="form-select">
+                                <option selected>Daily at 2:00 AM</option>
+                                <option>Every 12 hours</option>
+                                <option>Weekly on Sunday</option>
+                                <option>Manual only</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Retention Period (days)</label>
+                            <input type="number" class="form-control" value="30" min="1" max="365">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Performance Settings</h6>
+                        <div class="mb-3">
+                            <label class="form-label">Database Connection Pool Size</label>
+                            <input type="number" class="form-control" value="20" min="5" max="100">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cache Expiry (hours)</label>
+                            <input type="number" class="form-control" value="24" min="1" max="168">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Save Settings</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Backup Modal -->
+<div class="modal fade" id="backupModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-database me-2"></i>System Backup
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6>Backup Options</h6>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="backupDatabase" checked>
+                        <label class="form-check-label" for="backupDatabase">
+                            Database Backup
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="backupFiles" checked>
+                        <label class="form-check-label" for="backupFiles">
+                            File System Backup
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="backupConfig">
+                        <label class="form-check-label" for="backupConfig">
+                            Configuration Files
+                        </label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Backup Description</label>
+                    <input type="text" class="form-control" placeholder="e.g., Pre-update backup">
+                </div>
+                <div class="alert alert-info">
+                    <small>
+                        <i class="fas fa-info-circle me-1"></i>
+                        Last backup: July 10, 2025 at 02:00 AM (Successful)
+                    </small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning">Start Backup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .health-metric {
+        padding: 1rem;
+        border: 1px solid #e3e6f0;
+        border-radius: 0.35rem;
+        margin-bottom: 1rem;
+        background: #f8f9fc;
+    }
+
+    .progress {
+        height: 8px;
+    }
+
+    .alert {
+        border-radius: 0.35rem;
+    }
+
+    .alert-heading {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+</style>
+
+</body>
+</html>
